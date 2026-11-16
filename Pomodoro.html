@@ -1,0 +1,3630 @@
+<!DOCTYPE html>
+<html class="min-h-full" lang="es">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Pomodoro</title>
+<!-- Favicon con icono de tomate -->
+<link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;circle cx='50' cy='55' r='38' fill='%23c93b2b'/&gt;&lt;ellipse cx='42' cy='46' rx='10' ry='6' fill='%23df5c4c' opacity='0.6'/&gt;&lt;path d='M50,22 Q48,10 54,6 Q56,12 50,22 Z' fill='%233b6843'/&gt;&lt;path d='M50,22 Q34,16 28,24 Q38,24 50,22 Z' fill='%234d7c56'/&gt;&lt;path d='M50,22 Q66,16 72,24 Q62,24 50,22 Z' fill='%234d7c56'/&gt;&lt;path d='M50,22 Q40,28 35,35 Q44,28 50,22 Z' fill='%235b8e64'/&gt;&lt;path d='M50,22 Q60,28 65,35 Q56,28 50,22 Z' fill='%235b8e64'/&gt;&lt;/svg&gt;" rel="icon" type="image/svg+xml">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&amp;family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "var(--theme-primary, #7f301e)",
+            "primary-container": "var(--theme-primary-container, #9e4733)",
+            "on-primary": "var(--theme-on-primary, #ffffff)",
+            "on-primary-container": "#ffd4ca",
+            "secondary": "var(--theme-secondary, #4d6454)",
+            "secondary-container": "var(--theme-secondary-container, #cce6d2)",
+            "on-secondary": "var(--theme-on-secondary, #ffffff)",
+            "on-secondary-container": "#516858",
+            "surface": "#fff8f4",
+            "surface-dim": "#e0d8d4",
+            "surface-bright": "#fff8f4",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#faf2ed",
+            "surface-container": "#f5ece7",
+            "surface-container-high": "#efe7e2",
+            "surface-container-highest": "#e9e1dc",
+            "on-surface": "#1e1b18",
+            "on-surface-variant": "#55423e",
+            "outline": "#88726d",
+            "outline-variant": "#dbc1bb"
+          },
+          fontFamily: {
+            "display": ["Playfair Display", "serif"],
+            "sans": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+</script>
+<style>
+    :root {
+      --theme-primary: #7f301e;
+      --theme-primary-container: #9e4733;
+      --theme-on-primary: #ffffff;
+      --theme-secondary: #4d6454;
+      --theme-secondary-container: #cce6d2;
+      --theme-on-secondary: #ffffff;
+      --timer-ring: #7f301e;
+      --timer-text: #1e1b18;
+      --timer-glow: rgba(127, 48, 30, 0.12);
+      --card-bg: rgba(255, 248, 244, 0.88);
+      --card-border: rgba(136, 114, 109, 0.28);
+      --pill-bg: rgba(255, 248, 244, 0.84);
+      --text-main: #1e1b18;
+      --text-muted: #55423e;
+      --halo-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --circle-glass-bg: radial-gradient(circle, rgba(255, 248, 244, 0.90) 0%, rgba(255, 248, 244, 0.65) 68%, transparent 100%);
+    }
+
+    .dark {
+      --theme-primary: #ffb4a3;
+      --theme-primary-container: #ffdad2;
+      --theme-on-primary: #3d0600;
+      --theme-secondary: #cfe9d5;
+      --theme-secondary-container: #4d6454;
+      --theme-on-secondary: #0a2013;
+      --timer-ring: #ffb4a3;
+      --timer-text: #f7efea;
+      --timer-glow: rgba(255, 180, 163, 0.2);
+      --card-bg: rgba(30, 27, 24, 0.88);
+      --card-border: rgba(255, 255, 255, 0.16);
+      --pill-bg: rgba(30, 27, 24, 0.82);
+      --text-main: #f7efea;
+      --text-muted: #dbc1bb;
+      --halo-shadow: 0 6px 26px rgba(0, 0, 0, 0.45);
+      --circle-glass-bg: radial-gradient(circle, rgba(30, 27, 24, 0.90) 0%, rgba(30, 27, 24, 0.65) 70%, transparent 100%);
+    }
+
+    /* TEMA: NOCHE ESTRELLADA */
+    body[data-active-theme="noche"] {
+      --theme-primary: #f6c85f;
+      --theme-primary-container: #ffd978;
+      --theme-on-primary: #121829;
+      --theme-secondary: #7dd3fc;
+      --theme-secondary-container: #0c4a6e;
+      --theme-on-secondary: #082f49;
+      --timer-ring: #f6c85f;
+      --timer-text: #0f172a;
+      --timer-glow: rgba(246, 200, 95, 0.35);
+      --card-bg: rgba(248, 250, 252, 0.90);
+      --card-border: rgba(14, 116, 144, 0.3);
+      --pill-bg: rgba(241, 245, 249, 0.90);
+      --text-main: #091322;
+      --text-muted: #334155;
+      --circle-glass-bg: radial-gradient(circle, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.75) 65%, transparent 100%);
+      --halo-shadow: 0 8px 30px rgba(7, 18, 44, 0.25);
+    }
+    .dark body[data-active-theme="noche"] {
+      --theme-primary: #f6c85f;
+      --theme-primary-container: #fae092;
+      --theme-on-primary: #0a1020;
+      --theme-secondary: #38bdf8;
+      --theme-secondary-container: #1e3a8a;
+      --theme-on-secondary: #031122;
+      --timer-ring: #ffd166;
+      --timer-text: #ffffff;
+      --timer-glow: rgba(246, 200, 95, 0.45);
+      --card-bg: rgba(10, 18, 38, 0.88);
+      --card-border: rgba(246, 200, 95, 0.25);
+      --pill-bg: rgba(14, 25, 52, 0.86);
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --circle-glass-bg: radial-gradient(circle, rgba(10, 19, 41, 0.92) 0%, rgba(13, 27, 60, 0.72) 70%, transparent 100%);
+      --halo-shadow: 0 10px 36px rgba(0, 0, 0, 0.6);
+    }
+
+    /* TEMA: CARIBE */
+    body[data-active-theme="caribe"] {
+      --theme-primary: #0f766e;
+      --theme-primary-container: #14b8a6;
+      --theme-on-primary: #ffffff;
+      --theme-secondary: #c2410c;
+      --theme-secondary-container: #fed7aa;
+      --theme-on-secondary: #ffffff;
+      --timer-ring: #0f766e;
+      --timer-text: #134e4a;
+      --timer-glow: rgba(20, 184, 166, 0.25);
+      --card-bg: rgba(255, 253, 250, 0.92);
+      --card-border: rgba(15, 118, 110, 0.25);
+      --pill-bg: rgba(255, 250, 245, 0.90);
+      --text-main: #132a28;
+      --text-muted: #3d5a56;
+      --circle-glass-bg: radial-gradient(circle, rgba(255, 253, 248, 0.93) 0%, rgba(255, 247, 237, 0.75) 68%, transparent 100%);
+      --halo-shadow: 0 8px 30px rgba(15, 118, 110, 0.15);
+    }
+    .dark body[data-active-theme="caribe"] {
+      --theme-primary: #2dd4bf;
+      --theme-primary-container: #5eead4;
+      --theme-on-primary: #042f2e;
+      --theme-secondary: #fb923c;
+      --theme-secondary-container: #7c2d12;
+      --theme-on-secondary: #431407;
+      --timer-ring: #2dd4bf;
+      --timer-text: #f0fdfa;
+      --timer-glow: rgba(45, 212, 191, 0.4);
+      --card-bg: rgba(13, 31, 35, 0.88);
+      --card-border: rgba(45, 212, 191, 0.28);
+      --pill-bg: rgba(18, 44, 49, 0.86);
+      --text-main: #f0fdfa;
+      --text-muted: #99f6e4;
+      --circle-glass-bg: radial-gradient(circle, rgba(13, 31, 35, 0.92) 0%, rgba(13, 31, 35, 0.70) 70%, transparent 100%);
+      --halo-shadow: 0 10px 36px rgba(0, 0, 0, 0.55);
+    }
+
+    /* TEMA: BOSQUE NÓRDICO */
+    body[data-active-theme="bosque"] {
+      --theme-primary: #235338;
+      --theme-primary-container: #337a53;
+      --theme-on-primary: #ffffff;
+      --theme-secondary: #586e3f;
+      --theme-secondary-container: #d9e8c7;
+      --theme-on-secondary: #ffffff;
+      --timer-ring: #235338;
+      --timer-text: #173223;
+      --timer-glow: rgba(46, 107, 72, 0.25);
+      --card-bg: rgba(248, 252, 248, 0.92);
+      --card-border: rgba(46, 107, 72, 0.28);
+      --pill-bg: rgba(242, 248, 242, 0.90);
+      --text-main: #14281d;
+      --text-muted: #3d5647;
+      --circle-glass-bg: radial-gradient(circle, rgba(248, 252, 248, 0.94) 0%, rgba(240, 247, 240, 0.78) 68%, transparent 100%);
+      --halo-shadow: 0 8px 30px rgba(23, 50, 35, 0.2);
+    }
+    .dark body[data-active-theme="bosque"] {
+      --theme-primary: #6ee7b7;
+      --theme-primary-container: #a7f3d0;
+      --theme-on-primary: #064e3b;
+      --theme-secondary: #bef264;
+      --theme-secondary-container: #3f6212;
+      --theme-on-secondary: #1a2e05;
+      --timer-ring: #6ee7b7;
+      --timer-text: #ecfdf5;
+      --timer-glow: rgba(110, 231, 183, 0.4);
+      --card-bg: rgba(15, 29, 21, 0.88);
+      --card-border: rgba(110, 231, 183, 0.25);
+      --pill-bg: rgba(20, 39, 29, 0.86);
+      --text-main: #ecfdf5;
+      --text-muted: #a7f3d0;
+      --circle-glass-bg: radial-gradient(circle, rgba(15, 29, 21, 0.92) 0%, rgba(15, 29, 21, 0.70) 70%, transparent 100%);
+      --halo-shadow: 0 10px 36px rgba(0, 0, 0, 0.6);
+    }
+
+    /* TEMA: ATARDECER CÁLIDO */
+    body[data-active-theme="atardecer"] {
+      --theme-primary: #a73c18;
+      --theme-primary-container: #c44e26;
+      --theme-on-primary: #ffffff;
+      --theme-secondary: #b45309;
+      --theme-secondary-container: #fed7aa;
+      --theme-on-secondary: #ffffff;
+      --timer-ring: #a73c18;
+      --timer-text: #431407;
+      --timer-glow: rgba(196, 78, 38, 0.25);
+      --card-bg: rgba(255, 250, 246, 0.92);
+      --card-border: rgba(180, 83, 9, 0.26);
+      --pill-bg: rgba(255, 245, 238, 0.90);
+      --text-main: #33150b;
+      --text-muted: #6b3f30;
+      --circle-glass-bg: radial-gradient(circle, rgba(255, 250, 246, 0.94) 0%, rgba(255, 241, 230, 0.78) 68%, transparent 100%);
+      --halo-shadow: 0 8px 30px rgba(167, 60, 24, 0.2);
+    }
+    .dark body[data-active-theme="atardecer"] {
+      --theme-primary: #fb923c;
+      --theme-primary-container: #ffedd5;
+      --theme-on-primary: #431407;
+      --theme-secondary: #facc15;
+      --theme-secondary-container: #713f12;
+      --theme-on-secondary: #422006;
+      --timer-ring: #fb923c;
+      --timer-text: #fff7ed;
+      --timer-glow: rgba(251, 146, 60, 0.42);
+      --card-bg: rgba(35, 19, 14, 0.88);
+      --card-border: rgba(251, 146, 60, 0.25);
+      --pill-bg: rgba(48, 25, 18, 0.86);
+      --text-main: #fff7ed;
+      --text-muted: #fed7aa;
+      --circle-glass-bg: radial-gradient(circle, rgba(35, 19, 14, 0.92) 0%, rgba(35, 19, 14, 0.70) 70%, transparent 100%);
+      --halo-shadow: 0 10px 36px rgba(0, 0, 0, 0.6);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 0.4s ease, color 0.3s ease;
+      background-size: cover !important;
+      background-position: center !important;
+      background-attachment: fixed !important;
+      background-repeat: no-repeat !important;
+    }
+    .dark body {
+      background-color: #1e1b18;
+      color: var(--text-main);
+    }
+
+    .glass-card {
+      background: var(--card-bg) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-color: var(--card-border) !important;
+      box-shadow: var(--halo-shadow) !important;
+    }
+
+    .glass-pill {
+      background: var(--pill-bg) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-color: var(--card-border) !important;
+    }
+
+    .glass-timer-circle {
+      background: var(--circle-glass-bg) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 9999px;
+      box-shadow: 0 10px 40px var(--timer-glow);
+    }
+
+    .brand-tag {
+      background: var(--pill-bg) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      border: 1px solid var(--card-border) !important;
+    }
+
+    #timer-display {
+      color: var(--timer-text) !important;
+      text-shadow: 0 2px 10px var(--timer-glow), 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+
+    #timer-progress {
+      stroke: var(--timer-ring) !important;
+      filter: drop-shadow(0 0 6px var(--timer-glow));
+    }
+
+    .fab-menu-enter {
+      opacity: 0;
+      transform: scale(0.9) translateY(12px);
+      pointer-events: none;
+    }
+    .fab-menu-active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+    .modal-backdrop-enter {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .modal-backdrop-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content-enter {
+      opacity: 0;
+      transform: scale(0.94) translateY(16px);
+    }
+    .modal-content-active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(136, 114, 109, 0.3);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(136, 114, 109, 0.5);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .task-card-dragging {
+      opacity: 0.45;
+      transform: scale(0.98);
+    }
+    .task-card-drag-over {
+      border-color: var(--theme-primary) !important;
+      box-shadow: 0 0 0 2px var(--theme-primary) !important;
+    }
+</style>
+<style id="contrast-enhancements">
+  .dark body {
+    color: #f1f5f9 !important;
+  }
+  .dark .text-on-surface {
+    color: #f8fafc !important;
+  }
+  .dark .text-on-surface-variant,
+  .dark .text-outline,
+  .dark .text-on-surface-variant\/80,
+  .dark .placeholder-on-surface-variant\/50,
+  .dark .placeholder-on-surface-variant\/40 {
+    color: #cbd5e1 !important;
+    opacity: 1 !important;
+  }
+  .dark #timer-phase-subtitle {
+    color: #e2e8f0 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7) !important;
+  }
+  .dark .glass-card {
+    background: rgba(18, 16, 14, 0.92) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55) !important;
+  }
+  .dark .glass-pill {
+    background: rgba(24, 21, 18, 0.90) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+  .dark #timer-display {
+    color: #ffffff !important;
+    text-shadow: 0 2px 14px rgba(255, 180, 163, 0.3), 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+  }
+  .dark .opacity-70,
+  .dark .opacity-75,
+  .dark .opacity-85 {
+    opacity: 0.95 !important;
+  }
+  .dark select option {
+    background-color: #1e1b18 !important;
+    color: #f8fafc !important;
+  }
+
+  .dark #tasks-panel-subtitle,
+  .dark body[data-active-theme] #tasks-panel-subtitle {
+    color: #f1f5f9 !important;
+    opacity: 1 !important;
+  }
+
+  .dark #setting-pomodoro-val,
+  .dark #setting-short-val,
+  .dark #setting-long-val,
+  .dark body[data-active-theme] #setting-pomodoro-val,
+  .dark body[data-active-theme] #setting-short-val,
+  .dark body[data-active-theme] #setting-long-val {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    padding: 0.15rem 0.5rem !important;
+    border-radius: 9999px !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .dark input.bg-surface,
+  .dark textarea.bg-surface,
+  .dark select.bg-surface,
+  .dark #setting-pomodoro-duration,
+  .dark #setting-short-duration,
+  .dark #setting-long-duration,
+  .dark body[data-active-theme] input.bg-surface,
+  .dark body[data-active-theme] textarea.bg-surface,
+  .dark body[data-active-theme] select.bg-surface,
+  .dark body[data-active-theme] #setting-pomodoro-duration,
+  .dark body[data-active-theme] #setting-short-duration,
+  .dark body[data-active-theme] #setting-long-duration {
+    background-color: rgba(15, 23, 42, 0.90) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+  }
+
+  .dark .task-tab-btn.bg-surface,
+  .dark body[data-active-theme] .task-tab-btn.bg-surface,
+  .dark .stats-period-btn.bg-surface,
+  .dark body[data-active-theme] .stats-period-btn.bg-surface {
+    background-color: rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  }
+
+  .dark .mode-tab,
+  .dark body[data-active-theme] .mode-tab {
+    color: #e2e8f0 !important;
+  }
+  .dark .mode-tab:hover,
+  .dark body[data-active-theme] .mode-tab:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.12) !important;
+  }
+  .dark .mode-tab.bg-secondary-container,
+  .dark body[data-active-theme] .mode-tab.bg-secondary-container {
+    background-color: var(--theme-secondary-container) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65) !important;
+  }
+  .dark .mode-tab.bg-secondary-container > span,
+  .dark body[data-active-theme] .mode-tab.bg-secondary-container > span {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.85) !important;
+  }
+
+  body[data-active-theme="noche"] #timer-display {
+    color: #fef08a !important;
+    text-shadow: 0 0 20px rgba(254, 240, 138, 0.45), 0 2px 6px rgba(0, 0, 0, 0.8) !important;
+  }
+  body[data-active-theme="noche"] #timer-phase-subtitle {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8) !important;
+  }
+  body[data-active-theme="noche"] .brand-tag h1 {
+    color: #fef08a !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
+  }
+  body[data-active-theme="noche"] .glass-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(14, 116, 144, 0.35) !important;
+  }
+  body[data-active-theme="noche"] .glass-card .text-on-surface {
+    color: #0f172a !important;
+  }
+  body[data-active-theme="noche"] .glass-card .text-on-surface-variant {
+    color: #334155 !important;
+  }
+  body[data-active-theme="noche"] .glass-pill {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(14, 116, 144, 0.3) !important;
+  }
+
+  .dark body[data-active-theme="noche"] #timer-display {
+    color: #fde047 !important;
+    text-shadow: 0 0 24px rgba(253, 224, 71, 0.6), 0 2px 8px rgba(0, 0, 0, 0.9) !important;
+  }
+  .dark body[data-active-theme="noche"] #timer-phase-subtitle {
+    color: #f8fafc !important;
+  }
+  .dark body[data-active-theme="noche"] .glass-card {
+    background: rgba(10, 18, 38, 0.92) !important;
+    border-color: rgba(246, 200, 95, 0.3) !important;
+  }
+  .dark body[data-active-theme="noche"] .glass-card .text-on-surface {
+    color: #f8fafc !important;
+  }
+  .dark body[data-active-theme="noche"] .glass-card .text-on-surface-variant {
+    color: #cbd5e1 !important;
+  }
+  .dark body[data-active-theme="noche"] .glass-pill {
+    background: rgba(14, 25, 52, 0.90) !important;
+    border-color: rgba(246, 200, 95, 0.25) !important;
+  }
+
+  .m3-volume-pill-enter {
+    opacity: 0;
+    transform: scale(0.85) translateX(10px);
+    pointer-events: none;
+    max-width: 0 !important;
+    padding: 0 !important;
+    border-width: 0 !important;
+    overflow: hidden;
+  }
+  .m3-volume-pill-active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    pointer-events: auto;
+    max-width: 320px !important;
+  }
+  .m3-thick-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 14px;
+    border-radius: 9999px;
+    background: rgba(136, 114, 109, 0.25);
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .dark .m3-thick-slider {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .m3-thick-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: var(--theme-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    border: 3px solid #ffffff;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .dark .m3-thick-slider::-webkit-slider-thumb {
+    border-color: #1e1b18;
+  }
+  .m3-thick-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+  .m3-thick-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: var(--theme-primary);
+    border: 3px solid #ffffff;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body class="min-h-screen w-full overflow-x-hidden lg:h-screen lg:overflow-hidden flex flex-col justify-between p-2.5 sm:p-4 pb-24 lg:pb-4 select-none bg-surface text-on-surface antialiased relative" data-active-theme="original">
+<audio id="ambient-audio" loop=""></audio>
+<audio id="chime-fallback-audio" preload="auto"></audio>
+
+<!-- Cabecera Responsive -->
+<header class="w-full max-w-7xl mx-auto flex items-center justify-between gap-2 z-20 shrink-0 mb-2 sm:mb-3 px-0.5 sm:px-1">
+  <div class="brand-tag flex items-center gap-2 sm:gap-2.5 transition-all shadow-sm shrink-0">
+    <svg class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 shrink-0 drop-shadow-xs" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="56" fill="#b83824" r="37"></circle>
+      <ellipse cx="40" cy="46" fill="#da5642" opacity="0.65" rx="11" ry="6"></ellipse>
+      <path d="M50 21 Q47 9 54 5 Q57 11 50 21 Z" fill="#3b6843"></path>
+      <path d="M50 21 Q33 15 27 23 Q37 24 50 21 Z" fill="#4d7c56"></path>
+      <path d="M50 21 Q67 15 73 23 Q63 24 50 21 Z" fill="#4d7c56"></path>
+      <path d="M50 21 Q39 28 34 35 Q43 28 50 21 Z" fill="#5b8e64"></path>
+      <path d="M50 21 Q61 28 66 35 Q57 28 50 21 Z" fill="#5b8e64"></path>
+    </svg>
+    <h1 class="font-display text-xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-primary drop-shadow-xs">
+      Pomodoro
+    </h1>
+  </div>
+
+  <div class="flex items-center gap-1.5 sm:gap-2.5">
+    <!-- Botón Estadísticas -->
+    <button aria-label="Ver estadísticas" class="glass-pill px-2.5 sm:px-3.5 h-10 sm:h-11 rounded-full flex items-center gap-1.5 sm:gap-2 text-on-surface transition-all duration-200 active:scale-95 shadow-sm border border-outline-variant/40" id="btn-open-stats" title="Estadísticas de concentración">
+      <span class="material-symbols-outlined text-lg sm:text-xl text-primary">bar_chart</span>
+      <span class="text-xs sm:text-sm font-semibold hidden md:inline">Estadísticas</span>
+    </button>
+
+    <!-- Botón Panel de Tareas -->
+    <button aria-label="Abrir o cerrar panel de tareas" class="glass-pill px-2.5 sm:px-3.5 h-10 sm:h-11 rounded-full flex items-center gap-1.5 sm:gap-2 text-on-surface transition-all duration-200 active:scale-95 shadow-sm border border-outline-variant/40" id="btn-toggle-tasks" title="Ver Mis Tareas">
+      <span class="material-symbols-outlined text-lg sm:text-xl text-primary">checklist</span>
+      <span class="text-xs sm:text-sm font-semibold hidden md:inline">Tareas</span>
+      <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/25 text-primary border border-primary/40 font-extrabold" id="header-tasks-badge">0</span>
+    </button>
+
+    <!-- Botón Ajustes -->
+    <button aria-label="Ajustes del temporizador" class="glass-pill w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-on-surface transition-all duration-200 active:scale-95 shadow-sm border border-outline-variant/40" id="btn-open-settings" title="Ajustes del temporizador">
+      <span class="material-symbols-outlined text-xl sm:text-2xl transition-transform duration-300 hover:rotate-45">settings</span>
+    </button>
+
+    <!-- Botón Modo Oscuro / Claro -->
+    <button aria-label="Alternar tema" class="glass-pill w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-on-surface transition-all duration-200 active:scale-95 shadow-sm border border-outline-variant/40" id="theme-toggle" title="Alternar modo oscuro / claro">
+      <span class="material-symbols-outlined text-xl sm:text-2xl transition-transform duration-300" id="theme-icon">dark_mode</span>
+    </button>
+  </div>
+</header>
+
+<!-- FAB Menu Flotante de Temas -->
+<aside class="fixed left-3 sm:left-6 md:left-8 bottom-3 sm:bottom-6 z-40 flex flex-col items-start gap-2.5">
+  <div class="fab-menu-enter transition-all duration-300 origin-bottom-left w-[calc(100vw-1.5rem)] max-w-[18rem] rounded-2xl glass-card p-3 shadow-xl border backdrop-blur-xl" id="theme-fab-popover">
+    <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-outline-variant/30 px-2">
+      <span class="text-xs font-semibold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm text-primary">palette</span>
+        Temas visuales
+      </span>
+      <span class="text-[10px] font-medium text-secondary bg-secondary-container/60 px-2 py-0.5 rounded-full" id="active-theme-pill">Original</span>
+    </div>
+    <div aria-orientation="vertical" class="flex flex-col gap-1.5 max-h-[55vh] overflow-y-auto custom-scrollbar" role="menu">
+      <button class="theme-select-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98] ring-1 ring-primary/40 bg-surface-container/50" data-theme="original">
+        <div class="w-8 h-8 rounded-lg shrink-0 flex items-center justify-center bg-[#fff8f4] dark:bg-[#1e1b18] border border-outline-variant/50 shadow-inner">
+          <span class="w-4 h-4 rounded-full bg-primary"></span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-on-surface truncate">Tema Original</div>
+          <div class="text-[10px] text-on-surface-variant truncate">Cálido Terracota / Crema</div>
+        </div>
+        <span class="material-symbols-outlined text-sm text-primary theme-check-icon">check</span>
+      </button>
+      <button class="theme-select-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]" data-img="Noche estrellada sobre el mar.png" data-theme="noche">
+        <div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden border border-outline-variant/40 shadow-xs relative">
+          <img alt="Noche Estrellada" class="w-full h-full object-cover" src="Noche estrellada sobre el mar.png">
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-on-surface truncate">Noche Estrellada</div>
+          <div class="text-[10px] text-on-surface-variant truncate">Misterio cósmico y mar</div>
+        </div>
+        <span class="material-symbols-outlined text-sm text-primary theme-check-icon hidden">check</span>
+      </button>
+      <button class="theme-select-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]" data-img="Cafe en el caribe.jpeg" data-theme="caribe">
+        <div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden border border-outline-variant/40 shadow-xs relative">
+          <img alt="Café en el Caribe" class="w-full h-full object-cover" src="Cafe en el caribe.jpeg">
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-on-surface truncate">Café en el Caribe</div>
+          <div class="text-[10px] text-on-surface-variant truncate">Playa tropical y calma</div>
+        </div>
+        <span class="material-symbols-outlined text-sm text-primary theme-check-icon hidden">check</span>
+      </button>
+      <button class="theme-select-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]" data-img="Bosque Nórdico.jpeg" data-theme="bosque">
+        <div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden border border-outline-variant/40 shadow-xs relative">
+          <img alt="Bosque Nórdico" class="w-full h-full object-cover" src="Bosque Nórdico.jpeg">
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-on-surface truncate">Bosque Nórdico</div>
+          <div class="text-[10px] text-on-surface-variant truncate">Pinos, musgo y niebla</div>
+        </div>
+        <span class="material-symbols-outlined text-sm text-primary theme-check-icon hidden">check</span>
+      </button>
+      <button class="theme-select-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 active:scale-[0.98]" data-img="Atardecer Cálido.jpeg" data-theme="atardecer">
+        <div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden border border-outline-variant/40 shadow-xs relative">
+          <img alt="Atardecer Cálido" class="w-full h-full object-cover" src="Atardecer Cálido.jpeg">
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-on-surface truncate">Atardecer Cálido</div>
+          <div class="text-[10px] text-on-surface-variant truncate">Acantilado y resplandor dorado</div>
+        </div>
+        <span class="material-symbols-outlined text-sm text-primary theme-check-icon hidden">check</span>
+      </button>
+    </div>
+  </div>
+  <button aria-label="Abrir selector de tema" class="h-12 w-12 sm:h-14 sm:w-14 rounded-full bg-primary hover:bg-primary-container text-on-primary shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 group focus:outline-none focus:ring-4 focus:ring-primary/20" id="fab-theme-btn" title="Elegir tema">
+    <span class="material-symbols-outlined text-xl sm:text-2xl transition-transform duration-300 group-hover:rotate-45" id="fab-icon">palette</span>
+  </button>
+</aside>
+
+<!-- CONTENEDOR PRINCIPAL RESPONSIVE: Temporizador + Panel de Tareas -->
+<div class="w-full max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row items-center lg:items-stretch justify-center gap-6 lg:gap-8 z-10 relative min-h-0">
+  <!-- Columna Central: Temporizador Pomodoro -->
+  <main class="w-full flex-1 max-w-xl mx-auto flex flex-col items-center justify-center py-1 sm:py-2 relative transition-all duration-300">
+    <!-- Selector de Fases con Scroll Horizontal Suave en Móviles -->
+    <div class="glass-pill inline-flex p-1 rounded-full shadow-inner items-center gap-1 mb-2.5 max-w-full overflow-x-auto no-scrollbar transition-colors border border-outline-variant/30">
+      <button class="mode-tab px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-sm font-semibold transition-all duration-200 bg-secondary-container text-on-secondary-container shadow-sm flex items-center gap-1.5 whitespace-nowrap" id="btn-mode-pomodoro"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Concentración (25 min)</button>
+      <button class="mode-tab px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-sm font-medium transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap" id="btn-mode-short">Pausa Corta (5 min)</button>
+      <button class="mode-tab px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-sm font-medium transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap" id="btn-mode-long">Pausa Larga (15 min)</button>
+    </div>
+
+    <!-- Panel de rachas y ciclos Pomodoro -->
+    <div class="w-full max-w-md mb-2 px-3 py-1.5 rounded-2xl glass-card border shadow-xs transition-all">
+      <div class="flex flex-wrap items-center justify-between gap-1 text-xs font-medium text-on-surface-variant mb-1.5">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm text-primary">autorenew</span>
+          <span class="font-extrabold text-on-surface text-[11px] sm:text-xs" id="streak-cycle-status">Ciclo 1 • Sesión 1/8</span>
+        </div>
+        <div class="flex items-center gap-1 font-mono text-[10px] sm:text-[11px] bg-secondary-container/40 px-2 py-0.5 rounded-full border border-secondary/20">
+          <span class="text-secondary font-semibold" id="streak-total-cycles">Ciclos completos: 0</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 pt-1 border-t border-outline-variant/25 text-[11px]">
+        <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/5 dark:bg-white/5">
+          <span class="font-extrabold text-on-surface" id="focus-counter-label">Concentración: 0/4</span>
+          <div class="flex items-center gap-1" id="focus-dots-container">
+            <span class="focus-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+            <span class="focus-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+            <span class="focus-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+            <span class="focus-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-black/5 dark:bg-white/5">
+          <span class="font-extrabold text-on-surface" id="break-counter-label">Descansos cortos: 0/3</span>
+          <div class="flex items-center gap-1" id="break-dots-container">
+            <span class="break-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+            <span class="break-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+            <span class="break-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Indicador de Tarea Activa vinculada -->
+    <div class="w-full max-w-md mb-2 flex items-center justify-center px-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-medium glass-pill text-on-surface-variant border cursor-pointer hover:border-primary transition-all opacity-70 max-w-full" id="timer-active-task-pill" title="Haz clic para vincular o crear una tarea">
+        <span class="material-symbols-outlined text-sm text-primary shrink-0">play_circle</span>
+        <span class="truncate max-w-[200px] sm:max-w-[280px]" id="timer-active-task-name">No hay tarea seleccionada</span>
+      </div>
+    </div>
+
+    <!-- Temporizador Circular y Dígitos Adaptables -->
+    <div class="relative w-44 h-44 xs:w-48 xs:h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 flex items-center justify-center mb-3 shrink-0">
+      <div class="absolute inset-0 glass-timer-circle -z-10 pointer-events-none"></div>
+      <div class="absolute -top-3.5 sm:-top-4 md:-top-4.5 left-1/2 -translate-x-1/2 z-10 pointer-events-none transition-transform duration-300 hover:scale-105">
+        <svg class="drop-shadow-sm text-secondary" fill="none" height="32" viewBox="0 0 64 32" width="64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 23V11C32 8.5 33 6.5 35 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+          <path d="M32 20C27 18 19 14 13 16C12 20 18 22 32 21" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+          <path d="M32 20C26 18.5 20 17 15 17" stroke="currentColor" stroke-linecap="round" stroke-opacity="0.6" stroke-width="1.2"></path>
+          <path d="M32 20C37 18 45 14 51 16C52 20 46 22 32 21" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+          <path d="M32 20C38 18.5 44 17 49 17" stroke="currentColor" stroke-linecap="round" stroke-opacity="0.6" stroke-width="1.2"></path>
+          <path d="M32 21.5C28 22 22 25 20 28C24 28.5 28 26 32 22.5" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+          <path d="M32 21.5C36 22 42 25 44 28C40 28.5 36 26 32 22.5" fill="currentColor" fill-opacity="0.06" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+          <circle cx="32" cy="21" fill="currentColor" r="1.8"></circle>
+        </svg>
+      </div>
+      <svg class="w-full h-full -rotate-90 transform drop-shadow-sm" viewBox="0 0 240 240">
+        <circle class="text-black/10 dark:text-white/10" cx="120" cy="120" fill="none" r="105" stroke="currentColor" stroke-width="6"></circle>
+        <circle class="text-primary transition-all duration-300 ease-out" cx="120" cy="120" fill="none" id="timer-progress" r="105" stroke="currentColor" stroke-dasharray="659.73" stroke-dashoffset="0" stroke-linecap="round" stroke-width="6" style="stroke-dashoffset: 0;"></circle>
+      </svg>
+      <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <span class="font-display text-3xl sm:text-5xl md:text-6xl tracking-tight tabular-nums select-none drop-shadow-sm font-semibold" id="timer-display">25:00</span>
+        <span class="text-[10px] sm:text-xs uppercase tracking-widest font-bold text-on-surface-variant mt-1 drop-shadow-xs" id="timer-phase-subtitle">Concentración 1</span>
+      </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 shrink-0 w-full px-2">
+      <button class="group h-11 sm:h-12 px-5 sm:px-8 rounded-full bg-primary hover:bg-primary-container text-on-primary shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all duration-200 active:scale-95" id="btn-toggle-play">
+        <span class="material-symbols-outlined text-xl sm:text-2xl transition-transform group-hover:scale-110" id="btn-icon-state" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+        <span class="text-sm sm:text-base font-semibold tracking-wide" id="btn-label-state">Iniciar</span>
+      </button>
+      <button class="glass-pill h-11 sm:h-12 px-4 sm:px-6 rounded-full text-on-surface border shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all duration-200 active:scale-95 hover:bg-black/5 dark:hover:bg-white/5" id="btn-reset" title="Reiniciar temporizador">
+        <span class="material-symbols-outlined text-xl sm:text-2xl">restart_alt</span>
+        <span class="text-sm sm:text-base font-semibold tracking-wide">Reiniciar</span>
+      </button>
+    </div>
+
+    <!-- Sonido Ambiente y Control de Volumen -->
+    <div class="mt-2.5 flex flex-wrap items-center justify-center gap-2 px-2">
+      <div class="glass-pill inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border shadow-sm hover:border-primary transition-all duration-200 max-w-full">
+        <span class="material-symbols-outlined text-secondary text-lg sm:text-xl shrink-0" id="ambient-icon">volume_off</span>
+        <label class="text-[11px] sm:text-xs uppercase tracking-wider font-semibold text-on-surface-variant select-none cursor-pointer whitespace-nowrap hidden sm:inline" for="ambient-sound-select">
+          Sonido ambiente:
+        </label>
+        <div class="relative flex items-center min-w-0">
+          <select class="appearance-none bg-transparent pr-6 pl-1 py-0.5 text-xs sm:text-sm font-medium text-on-surface cursor-pointer focus:outline-none focus:ring-0 border-none truncate" id="ambient-sound-select">
+            <option class="bg-surface-container dark:bg-[#34302d] text-on-surface dark:text-[#f7efea]" data-audio="" value="none">Silencio / Desactivado</option>
+            <option class="bg-surface-container dark:bg-[#34302d] text-on-surface dark:text-[#f7efea]" data-audio="dragon-studio-rain-sounds-ambience.mp3" value="rain">Lluvia suave</option>
+            <option class="bg-surface-container dark:bg-[#34302d] text-on-surface dark:text-[#f7efea]" data-audio="dragon-studio-gentle-ocean-waves.mp3" value="waves">Olas del mar</option>
+            <option class="bg-surface-container dark:bg-[#34302d] text-on-surface dark:text-[#f7efea]" data-audio="freesound_community-coffee-shop-ambience.mp3" value="cafe">Cafetería tranquila</option>
+            <option class="bg-surface-container dark:bg-[#34302d] text-on-surface dark:text-[#f7efea]" data-audio="freesound_community-forest-wind-and-birds.mp3" value="forest">Bosque y pájaros</option>
+            <option class="bg-surface-container dark:bg-[#34302d] text-on-surface dark:text-[#f7efea]" data-audio="themediaguy-soft-soothing-deep-white-noise.mp3" value="white_noise">Ruido blanco</option>
+          </select>
+          <span class="material-symbols-outlined text-lg text-outline pointer-events-none absolute right-0">expand_more</span>
+        </div>
+      </div>
+      <div class="relative flex items-center z-30" id="m3-volume-wrapper">
+        <button aria-expanded="false" aria-haspopup="true" aria-label="Abrir control de volumen nativo" class="glass-pill h-10 w-10 sm:h-11 sm:w-11 rounded-full flex items-center justify-center border shadow-xs text-secondary hover:text-primary transition-all duration-200 active:scale-95 hover:border-primary" id="volume-compact-btn" title="Ajustar volumen">
+          <span class="material-symbols-outlined text-xl select-none" id="volume-compact-icon">volume_up</span>
+        </button>
+        <div class="m3-volume-pill-enter absolute right-0 sm:relative flex items-center gap-2 px-3 py-1.5 rounded-full glass-card border shadow-lg transition-all duration-300 origin-right" id="volume-expanded-pill">
+          <button aria-label="Silenciar o reactivar sonido" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 text-secondary hover:text-primary transition-colors flex items-center justify-center shrink-0" id="volume-mute-btn" title="Silenciar / Reactivar">
+            <span class="material-symbols-outlined text-lg select-none" id="volume-icon">volume_up</span>
+          </button>
+          <div class="flex items-center w-28 sm:w-44 px-1">
+            <input aria-label="Nivel de volumen" class="m3-thick-slider w-full cursor-pointer" id="volume-slider" max="1" min="0" step="0.01" type="range" value="0.7">
+          </div>
+          <span class="text-xs font-mono tabular-nums font-extrabold text-on-surface w-9 text-center select-none shrink-0" id="volume-label">70%</span>
+          <button aria-label="Cerrar control de volumen" class="p-1 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-black/5 dark:hover:bg-white/5 transition-colors shrink-0" id="volume-close-btn" title="Cerrar">
+            <span class="material-symbols-outlined text-base select-none">close</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Columna Derecha: PANEL DE GESTIÓN DE TAREAS RESPONSIVE -->
+  <aside class="w-full max-w-xl lg:max-w-none lg:w-[380px] xl:w-[410px] shrink-0 transition-all duration-300 flex flex-col rounded-3xl glass-card border shadow-xl p-3 sm:p-4 backdrop-blur-xl lg:max-h-[calc(100vh-5rem)] overflow-hidden" id="task-sidebar">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/30">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">fact_check</span>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="font-display text-lg sm:text-xl font-bold tracking-tight text-on-surface">Mis tareas</h2>
+            <span class="text-[11px] sm:text-xs px-2 py-0.5 rounded-full bg-primary/25 text-primary border border-primary/40 font-extrabold" id="tasks-badge-count">0 pendientes</span>
+          </div>
+          <p class="text-[11px] font-bold text-on-surface/90 truncate" id="tasks-panel-subtitle">Vincula tu concentración con objetivos reales</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-black/5 dark:hover:bg-white/5 transition-all" id="btn-collapse-tasks" title="Ocultar panel">
+          <span class="material-symbols-outlined text-lg">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tarea Actual Pinned Banner -->
+    <div class="mb-3 p-3 rounded-2xl border transition-all duration-200 glass-card opacity-85" id="active-task-banner">
+      <div class="flex items-center gap-2.5 text-on-surface-variant py-1 cursor-pointer" onclick="window.focusFirstPendingTask()">
+        <span class="material-symbols-outlined text-xl text-primary shrink-0">timer</span>
+        <div class="flex-1 text-xs">
+          <p class="font-medium text-on-surface">No hay tarea seleccionada</p>
+          <p class="text-[11px] text-on-surface-variant">Selecciona o crea una tarea para vincular tu tiempo.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros de Estado -->
+    <div class="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 mb-3 border border-outline-variant/20">
+      <button class="task-tab-btn flex-1 py-1.5 px-1.5 rounded-lg text-[11px] sm:text-xs font-semibold text-center transition-all bg-surface text-primary shadow-xs flex items-center justify-center gap-1" data-filter="all">
+        <span>Todas</span>
+        <span class="text-[10px] opacity-75 font-mono" id="tab-count-all">(0)</span>
+      </button>
+      <button class="task-tab-btn flex-1 py-1.5 px-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-center transition-all text-on-surface hover:text-primary flex items-center justify-center gap-1" data-filter="pending">
+        <span>Pendientes</span>
+        <span class="text-[10px] opacity-75 font-mono" id="tab-count-pending">(0)</span>
+      </button>
+      <button class="task-tab-btn flex-1 py-1.5 px-1.5 rounded-lg text-[11px] sm:text-xs font-bold text-center transition-all text-on-surface hover:text-primary flex items-center justify-center gap-1" data-filter="completed">
+        <span>Hechas</span>
+        <span class="text-[10px] opacity-75 font-mono" id="tab-count-completed">(0)</span>
+      </button>
+    </div>
+
+    <!-- Botones de Acción Tareas -->
+    <div class="grid grid-cols-3 gap-1.5 mb-3">
+      <button class="py-2 px-1.5 rounded-xl border border-dashed border-primary/50 hover:border-primary text-primary hover:bg-primary/10 text-xs font-semibold flex items-center justify-center gap-1 transition-all active:scale-[0.99]" id="btn-show-add-task">
+        <span class="material-symbols-outlined text-base">add</span>
+        <span class="truncate">Añadir</span>
+      </button>
+      <button class="py-2 px-1.5 rounded-xl border border-outline-variant/50 hover:border-secondary text-secondary bg-black/5 dark:bg-white/5 hover:bg-secondary-container/40 text-xs font-semibold flex items-center justify-center gap-1 transition-all active:scale-[0.99]" id="btn-show-import-task" title="Importar tareas desde archivo o JSON">
+        <span class="material-symbols-outlined text-base">file_upload</span>
+        <span class="truncate">Importar</span>
+      </button>
+      <button class="py-2 px-1.5 rounded-xl border border-outline-variant/50 hover:border-primary text-primary bg-black/5 dark:bg-white/5 hover:bg-primary/10 text-xs font-semibold flex items-center justify-center gap-1 transition-all active:scale-[0.99]" id="btn-export-tasks" title="Exportar tareas a archivo JSON y portapapeles">
+        <span class="material-symbols-outlined text-base">file_download</span>
+        <span class="truncate">Exportar</span>
+      </button>
+    </div>
+
+    <!-- Formulario Inline -->
+    <form class="hidden mb-3.5 p-3.5 rounded-2xl glass-card border shadow-md flex flex-col gap-2.5 transition-all" id="task-form">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-on-surface" id="task-form-title">Crear nueva tarea</span>
+        <button class="text-on-surface-variant hover:text-on-surface text-xs p-1" id="btn-cancel-task-form" type="button">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      </div>
+      <input id="task-form-id" type="hidden" value="">
+      <input class="w-full text-xs font-medium bg-surface border border-outline-variant/50 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary placeholder-on-surface-variant/50" id="task-input-title" placeholder="¿En qué vas a trabajar?" required="" type="text">
+      <textarea class="w-full text-xs bg-surface border border-outline-variant/50 rounded-xl px-3 py-1.5 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary placeholder-on-surface-variant/50 resize-none" id="task-input-desc" placeholder="Detalles o notas breves (opcional)..." rows="2"></textarea>
+      <div class="text-xs">
+        <label class="block text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant mb-1">Prioridad</label>
+        <select class="w-full text-xs bg-surface border border-outline-variant/50 rounded-lg px-2 py-1.5 text-on-surface focus:ring-primary focus:border-primary" id="task-input-priority">
+          <option value="baja">Baja</option>
+          <option selected="" value="media">Media</option>
+          <option value="alta">Alta</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2 pt-1">
+        <button class="flex-1 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs transition-all active:scale-95 flex items-center justify-center gap-1" type="submit">
+          <span class="material-symbols-outlined text-sm">save</span>
+          <span id="btn-save-task-text">Guardar tarea</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Lista Desplazable de Tareas -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-2 pr-1 pb-1 min-h-[140px] max-h-[42vh] lg:max-h-[44vh]" id="tasks-container"></div>
+
+    <!-- Footer del Panel -->
+    <div class="pt-3 mt-2 border-t border-outline-variant/25 flex items-center justify-between text-[11px] text-on-surface-variant">
+      <span class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-sm text-secondary">timelapse</span>
+        <span class="text-on-surface font-extrabold" id="tasks-total-focused-time">Tiempo invertido: 0 min</span>
+      </span>
+      <span class="font-mono font-medium" id="tasks-completed-ratio">0 Pomodoros</span>
+    </div>
+  </aside>
+</div>
+
+<!-- Modal 1: Fin de Fase -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="phase-complete-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-md rounded-3xl p-5 sm:p-7 glass-card border shadow-2xl flex flex-col items-center text-center">
+    <div class="w-14 h-14 rounded-full bg-secondary-container text-secondary flex items-center justify-center mb-4 shadow-inner">
+      <span class="material-symbols-outlined text-3xl">notifications_active</span>
+    </div>
+    <h3 class="font-display text-xl sm:text-2xl font-semibold text-primary mb-2" id="modal-phase-title">
+      ¡Tiempo de concentración completado!
+    </h3>
+    <p class="text-sm text-on-surface-variant mb-6 leading-relaxed" id="modal-phase-desc">
+      Siguiente paso: Descanso corto 1 (5 min)
+    </p>
+    <button class="w-full h-12 rounded-full bg-primary hover:bg-primary-container text-on-primary font-semibold text-sm transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center gap-2" id="btn-modal-prepare-next">
+      <span class="material-symbols-outlined text-xl">skip_next</span>
+      Preparar siguiente sesión
+    </button>
+  </div>
+</div>
+
+<!-- Modal 2: Advertencia Racha -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="streak-warning-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-md rounded-3xl p-5 sm:p-7 glass-card border shadow-2xl flex flex-col items-center text-center">
+    <div class="w-14 h-14 rounded-full bg-[#ffdad6] dark:bg-[#93000a]/50 text-[#ba1a1a] dark:text-[#ffdad6] flex items-center justify-center mb-4 shadow-inner">
+      <span class="material-symbols-outlined text-3xl">warning</span>
+    </div>
+    <h3 class="font-display text-lg sm:text-xl font-semibold text-on-surface mb-2">
+      ¿Quieres cambiar de temporizador?
+    </h3>
+    <p class="text-sm text-on-surface-variant mb-6 leading-relaxed">
+      Si abandonas esta sesión, perderás tu racha de concentración y se reiniciará el progreso del ciclo actual.
+    </p>
+    <div class="w-full flex flex-col sm:flex-row items-center gap-3">
+      <button class="w-full sm:flex-1 h-11 rounded-full glass-pill text-on-surface border font-semibold text-xs transition-all duration-200 active:scale-95 hover:bg-black/5 dark:hover:bg-white/5" id="btn-cancel-change">
+        Continuar sesión
+      </button>
+      <button class="w-full sm:flex-1 h-11 rounded-full bg-primary hover:bg-primary-container text-on-primary font-semibold text-xs transition-all duration-200 active:scale-95 shadow-sm" id="btn-confirm-change">
+        Cambiar de temporizador
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Importar Tareas -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="import-task-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-lg rounded-3xl p-4 sm:p-6 glass-card border shadow-2xl flex flex-col text-left max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-secondary-container text-secondary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">upload_file</span>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-on-surface">Importar tareas</h3>
+          <p class="text-[11px] text-on-surface-variant">Carga tareas en formato JSON (pendientes o completadas)</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg" id="btn-close-import-modal" type="button">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1.5 flex items-center justify-between">
+          <span>Subir archivo (.json)</span>
+          <span class="text-[10px] font-normal text-on-surface-variant">Archivos exportados o creados</span>
+        </label>
+        <div class="relative flex items-center">
+          <input accept=".json,application/json,text/plain" class="block w-full text-xs text-on-surface file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-black/10 dark:file:bg-white/10 file:text-on-surface hover:file:bg-primary/20 cursor-pointer border border-outline-variant/40 rounded-xl p-1 bg-surface" id="import-file-input" type="file">
+        </div>
+      </div>
+      <div class="flex items-center gap-2 my-0.5">
+        <div class="flex-1 h-px bg-outline-variant/30"></div>
+        <span class="text-[10px] uppercase font-semibold text-on-surface-variant tracking-wider">o pegar texto JSON</span>
+        <div class="flex-1 h-px bg-outline-variant/30"></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-semibold text-on-surface" for="import-json-textarea">Pega tu JSON aquí:</label>
+          <button class="text-[10px] text-primary font-semibold underline hover:opacity-80" id="btn-fill-example-json" type="button">Cargar ejemplo</button>
+        </div>
+        <textarea class="w-full text-xs font-mono bg-surface border border-outline-variant/50 rounded-xl p-2.5 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary placeholder-on-surface-variant/40 resize-none h-32 leading-relaxed" id="import-json-textarea" placeholder="[
+  {
+    &quot;titulo&quot;: &quot;Preparar presentación de sprint&quot;,
+    &quot;descripcion&quot;: &quot;Revisar diapositivas y métricas&quot;,
+    &quot;prioridad&quot;: &quot;alta&quot;,
+    &quot;pomodorosCompletados&quot;: 1,
+    &quot;tiempoEmpleadoSegundos&quot;: 1500,
+    &quot;completada&quot;: false
+  }
+]"></textarea>
+        <p class="text-[10px] text-on-surface-variant/80 mt-1">Soporta: <code>titulo/title</code>, <code>descripcion/desc</code>, <code>prioridad/priority</code>, <code>pomodorosCompletados/pomodoros</code>, <code>tiempoEmpleadoSegundos/tiempoDedicadoMinutos</code>, <code>completada/completed</code>.</p>
+      </div>
+      <div class="hidden text-xs px-3 py-2 rounded-xl" id="import-status-msg"></div>
+    </div>
+    <div class="flex items-center justify-end gap-2.5 mt-4 pt-3 border-t border-outline-variant/20">
+      <button class="px-4 py-2 rounded-full glass-pill text-on-surface text-xs font-semibold transition-all hover:bg-black/5 dark:hover:bg-white/5" id="btn-cancel-import" type="button">
+        Cancelar
+      </button>
+      <button class="px-5 py-2 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all active:scale-95" id="btn-execute-import" type="button">
+        <span class="material-symbols-outlined text-sm">download_done</span>
+        <span>Importar tareas</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: Exportar Tareas -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="export-task-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-lg rounded-3xl p-4 sm:p-6 glass-card border shadow-2xl flex flex-col text-left max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">file_download</span>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-on-surface">Exportar tareas</h3>
+          <p class="text-[11px] text-on-surface-variant" id="export-modal-count-desc">Exportando tus tareas actuales</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg" id="btn-close-export-modal" type="button">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1.5 flex items-center justify-between">
+          <span>Datos JSON generados</span>
+          <span class="text-[10px] font-mono text-secondary" id="export-status-tag">Listo para guardar</span>
+        </label>
+        <textarea class="w-full text-xs font-mono bg-surface border border-outline-variant/50 rounded-xl p-2.5 text-on-surface select-all resize-none h-44 leading-relaxed cursor-text" id="export-json-preview" readonly=""></textarea>
+      </div>
+      <p class="text-[11px] text-on-surface-variant/80">El archivo contiene todas las tareas con su título, descripción, prioridad, pomodoros completados, tiempo dedicado y estado.</p>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 mt-4 pt-3 border-t border-outline-variant/20">
+      <button class="w-full sm:w-auto px-4 py-2 rounded-full glass-pill text-on-surface text-xs font-semibold transition-all flex items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5" id="btn-copy-export-json" type="button">
+        <span class="material-symbols-outlined text-sm">content_copy</span>
+        <span id="btn-copy-export-text">Copiar JSON</span>
+      </button>
+      <button class="w-full sm:w-auto px-5 py-2 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95" id="btn-download-export-file" type="button">
+        <span class="material-symbols-outlined text-sm">download</span>
+        <span>Descargar tareas_pomodoro.json</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5: Ajustes -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="settings-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-lg rounded-3xl p-4 sm:p-6 glass-card border shadow-2xl flex flex-col text-left max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div class="flex items-center justify-between pb-3 mb-4 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">settings</span>
+        </div>
+        <div>
+          <h3 class="font-display text-lg sm:text-xl font-bold text-on-surface">Ajustes del temporizador</h3>
+          <p class="text-[11px] text-on-surface-variant">Personaliza las duraciones, notificaciones y el inicio automático</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg" id="btn-close-settings-modal" type="button" title="Cerrar ajustes">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-5">
+      <section>
+        <div class="flex items-center gap-1.5 mb-3">
+          <span class="material-symbols-outlined text-sm text-primary">timer</span>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-primary">Duración de periodos (minutos)</h4>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 flex flex-col gap-2">
+            <div class="flex items-center justify-between"><label class="text-xs font-semibold text-on-surface" for="setting-pomodoro-duration">Concentración</label><span class="font-mono font-bold text-xs text-primary" id="setting-pomodoro-val">25 min</span></div>
+            <input class="m3-thick-slider w-full" id="setting-pomodoro-slider" max="120" min="1" step="1" type="range" value="25">
+            <div class="flex justify-between items-center text-[10px] text-on-surface-variant"><span class="font-medium">1m</span><input class="w-16 text-center font-mono text-xs font-bold rounded-lg bg-surface border border-outline-variant/40 py-0.5 text-on-surface" id="setting-pomodoro-duration" max="180" min="1" type="number" value="25"><span class="font-medium">120m</span></div>
+          </div>
+          <div class="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 flex flex-col gap-2">
+            <div class="flex items-center justify-between"><label class="text-xs font-semibold text-on-surface" for="setting-short-duration">Pausa Corta</label><span class="font-mono font-bold text-xs text-secondary" id="setting-short-val">5 min</span></div>
+            <input class="m3-thick-slider w-full" id="setting-short-slider" max="30" min="1" step="1" type="range" value="5">
+            <div class="flex justify-between items-center text-[10px] text-on-surface-variant"><span class="font-medium">1m</span><input class="w-14 text-center font-mono text-xs font-bold rounded-lg bg-surface border border-outline-variant/40 py-0.5 text-on-surface" id="setting-short-duration" max="30" min="1" type="number" value="5"><span class="font-medium">30m</span></div>
+          </div>
+          <div class="p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 flex flex-col gap-2">
+            <div class="flex items-center justify-between"><label class="text-xs font-semibold text-on-surface" for="setting-long-duration">Pausa Larga</label><span class="font-mono font-bold text-xs text-secondary" id="setting-long-val">15 min</span></div>
+            <input class="m3-thick-slider w-full" id="setting-long-slider" max="60" min="1" step="1" type="range" value="15">
+            <div class="flex justify-between items-center text-[10px] text-on-surface-variant"><span class="font-medium">1m</span><input class="w-14 text-center font-mono text-xs font-bold rounded-lg bg-surface border border-outline-variant/40 py-0.5 text-on-surface" id="setting-long-duration" max="60" min="1" type="number" value="15"><span class="font-medium">60m</span></div>
+          </div>
+        </div>
+      </section>
+      <section class="border-t border-outline-variant/20 pt-4">
+        <div class="flex items-center gap-1.5 mb-3">
+          <span class="material-symbols-outlined text-sm text-primary">autoplay</span>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-primary">Inicio automático y alertas en segundo plano</h4>
+        </div>
+        <div class="flex flex-col gap-2.5">
+          <label class="flex items-center justify-between p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 cursor-pointer hover:border-primary/50 transition-colors">
+            <div class="pr-3">
+              <div class="text-xs font-bold text-on-surface flex items-center gap-1.5 flex-wrap">Auto-iniciar descansos<span class="text-[10px] font-normal px-2 py-0.2 rounded-full bg-secondary-container/60 text-secondary">Recomendado</span></div>
+              <p class="text-[11px] text-on-surface-variant mt-0.5">Comienza el descanso corto o largo inmediatamente al terminar la concentración.</p>
+            </div>
+            <div class="relative inline-flex items-center cursor-pointer shrink-0">
+              <input class="sr-only peer" id="setting-autostart-break" type="checkbox">
+              <div class="w-11 h-6 bg-outline-variant/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </div>
+          </label>
+          <label class="flex items-center justify-between p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 cursor-pointer hover:border-primary/50 transition-colors">
+            <div class="pr-3">
+              <div class="text-xs font-bold text-on-surface flex items-center gap-1.5">Auto-iniciar concentración</div>
+              <p class="text-[11px] text-on-surface-variant mt-0.5">Inicia automáticamente el bloque de concentración al finalizar cualquier pausa.</p>
+            </div>
+            <div class="relative inline-flex items-center cursor-pointer shrink-0">
+              <input class="sr-only peer" id="setting-autostart-pomodoro" type="checkbox">
+              <div class="w-11 h-6 bg-outline-variant/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </div>
+          </label>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30">
+            <div class="pr-2">
+              <div class="text-xs font-bold text-on-surface flex items-center gap-1.5">Notificaciones de escritorio</div>
+              <p class="text-[11px] text-on-surface-variant mt-0.5">Muestra alertas nativas del sistema operativo aunque cambies de pestaña o minimices.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" id="btn-test-notification" class="px-3 py-1.5 rounded-full glass-pill text-xs font-semibold text-primary border hover:border-primary transition-all">Probar aviso</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-3 mt-5 pt-3 border-t border-outline-variant/20">
+      <button class="text-xs font-semibold text-outline hover:text-primary transition-colors underline" id="btn-reset-default-settings" type="button">Restablecer valores</button>
+      <div class="flex items-center gap-2 ml-auto">
+        <button class="px-4 py-2 rounded-full glass-pill text-on-surface text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5" id="btn-cancel-settings" type="button">Cancelar</button>
+        <button class="px-5 py-2 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs flex items-center gap-1.5 active:scale-95" id="btn-save-settings" type="button"><span class="material-symbols-outlined text-sm">check</span><span>Guardar ajustes</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 6: Estadísticas Semanales, Mensuales y Anuales + Importar/Exportar -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="weekly-stats-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-2xl rounded-3xl p-4 sm:p-6 glass-card border shadow-2xl flex flex-col text-left max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <!-- Cabecera del Modal -->
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">bar_chart</span>
+        </div>
+        <div>
+          <h3 class="font-display text-lg sm:text-xl font-bold text-on-surface" id="stats-modal-title">Estadísticas semanales</h3>
+          <p class="text-[11px] text-on-surface-variant" id="stats-period-range-label">Semana actual (Lunes – Domingo)</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button class="px-2.5 py-1.5 rounded-xl border border-outline-variant/50 hover:border-secondary text-secondary bg-black/5 dark:bg-white/5 hover:bg-secondary-container/40 text-xs font-semibold flex items-center gap-1 transition-all active:scale-95" id="btn-open-import-stats" title="Importar estadísticas desde archivo o JSON" type="button">
+          <span class="material-symbols-outlined text-sm">file_upload</span>
+          <span class="hidden sm:inline">Importar</span>
+        </button>
+        <button class="px-2.5 py-1.5 rounded-xl border border-outline-variant/50 hover:border-primary text-primary bg-black/5 dark:bg-white/5 hover:bg-primary/10 text-xs font-semibold flex items-center gap-1 transition-all active:scale-95" id="btn-open-export-stats" title="Exportar estadísticas en JSON" type="button">
+          <span class="material-symbols-outlined text-sm">file_download</span>
+          <span class="hidden sm:inline">Exportar</span>
+        </button>
+        <button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg ml-1" id="btn-close-stats-modal" type="button" title="Cerrar estadísticas">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Selector de Periodo (Semanal / Mensual / Anual) y Navegación Temporal -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-4">
+      <div class="flex items-center gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-outline-variant/20 flex-1">
+        <button class="stats-period-btn flex-1 py-1.5 px-2.5 rounded-lg text-xs font-semibold text-center transition-all bg-surface text-primary shadow-xs" data-period="weekly" type="button">Semanal</button>
+        <button class="stats-period-btn flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium text-center transition-all text-on-surface-variant hover:text-primary" data-period="monthly" type="button">Mensual</button>
+        <button class="stats-period-btn flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium text-center transition-all text-on-surface-variant hover:text-primary" data-period="yearly" type="button">Anual</button>
+      </div>
+      <div class="flex items-center justify-between sm:justify-end gap-1.5 bg-black/5 dark:bg-white/5 border border-outline-variant/20 rounded-xl px-2 py-1">
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 text-on-surface transition-colors" id="btn-stats-prev-period" title="Periodo anterior" type="button">
+          <span class="material-symbols-outlined text-base">chevron_left</span>
+        </button>
+        <button class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-primary hover:bg-primary/10 transition-colors" id="btn-stats-current-period" title="Volver al periodo actual" type="button">Actual</button>
+        <button class="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 text-on-surface transition-colors" id="btn-stats-next-period" title="Periodo siguiente" type="button">
+          <span class="material-symbols-outlined text-base">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tarjetas de Resumen del Periodo -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-5">
+      <div class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-on-surface-variant mb-1">
+          <span class="text-[11px] font-semibold uppercase tracking-wider">Tiempo enfocado</span>
+          <span class="material-symbols-outlined text-base text-primary">schedule</span>
+        </div>
+        <div class="font-display text-2xl font-bold text-on-surface" id="stats-total-time">0m</div>
+        <div class="text-[10px] text-on-surface-variant mt-0.5 truncate" id="stats-best-day-label">Mejor registro: —</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-on-surface-variant mb-1">
+          <span class="text-[11px] font-semibold uppercase tracking-wider">Pomodoros</span>
+          <span class="text-sm">🍅</span>
+        </div>
+        <div class="font-display text-2xl font-bold text-primary" id="stats-total-pomodoros">0</div>
+        <div class="text-[10px] text-on-surface-variant mt-0.5" id="stats-active-days-label">0 días activos</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 flex flex-col justify-between">
+        <div class="flex items-center justify-between text-on-surface-variant mb-1">
+          <span class="text-[11px] font-semibold uppercase tracking-wider" id="stats-avg-title">Promedio diario</span>
+          <span class="material-symbols-outlined text-base text-secondary">trending_up</span>
+        </div>
+        <div class="font-display text-2xl font-bold text-secondary" id="stats-daily-avg">0m</div>
+        <div class="text-[10px] text-on-surface-variant mt-0.5" id="stats-avg-subtitle">Calculado sobre 7 días</div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Barras Adaptativo -->
+    <div class="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 mb-4">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <span class="text-xs font-bold text-on-surface" id="stats-chart-subtitle">Actividad diaria (minutos de concentración)</span>
+        <span class="text-[10px] font-mono text-on-surface-variant flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-primary inline-block"></span> <span id="stats-legend-current">Hoy</span>
+          <span class="w-2 h-2 rounded-full bg-secondary inline-block ml-1"></span> <span id="stats-legend-others">Otros días</span>
+        </span>
+      </div>
+      <div class="w-full overflow-x-auto custom-scrollbar pb-1">
+        <div class="grid grid-cols-7 gap-1.5 sm:gap-3 items-end h-44 pt-5 px-1" id="stats-bars-container">
+          <!-- Generado dinámicamente por JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-outline-variant/20">
+      <button class="text-xs font-semibold text-outline hover:text-red-500 transition-colors underline" id="btn-reset-weekly-stats" type="button">Borrar todo el historial</button>
+      <button class="px-5 py-2 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs transition-all active:scale-95 ml-auto" id="btn-done-stats" type="button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 7: Importar Estadísticas -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="import-stats-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-lg rounded-3xl p-4 sm:p-6 glass-card border shadow-2xl flex flex-col text-left max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-secondary-container text-secondary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">upload_file</span>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-on-surface">Importar estadísticas</h3>
+          <p class="text-[11px] text-on-surface-variant">Restaura o combina tu historial de concentración en JSON</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg" id="btn-close-import-stats-modal" type="button">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1.5 flex items-center justify-between">
+          <span>Subir archivo (.json)</span>
+          <span class="text-[10px] font-normal text-on-surface-variant">Archivo estadisticas_pomodoro.json</span>
+        </label>
+        <input accept=".json,application/json,text/plain" class="block w-full text-xs text-on-surface file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-black/10 dark:file:bg-white/10 file:text-on-surface hover:file:bg-primary/20 cursor-pointer border border-outline-variant/40 rounded-xl p-1 bg-surface" id="import-stats-file-input" type="file">
+      </div>
+
+      <div class="flex items-center gap-2 my-0.5">
+        <div class="flex-1 h-px bg-outline-variant/30"></div>
+        <span class="text-[10px] uppercase font-semibold text-on-surface-variant tracking-wider">o pegar texto JSON</span>
+        <div class="flex-1 h-px bg-outline-variant/30"></div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="text-xs font-semibold text-on-surface" for="import-stats-json-textarea">Contenido JSON de estadísticas:</label>
+          <button class="text-[10px] text-primary font-semibold underline hover:opacity-80" id="btn-fill-example-stats-json" type="button">Cargar ejemplo</button>
+        </div>
+        <textarea class="w-full text-xs font-mono bg-surface border border-outline-variant/50 rounded-xl p-2.5 text-on-surface focus:ring-1 focus:ring-primary focus:border-primary placeholder-on-surface-variant/40 resize-none h-32 leading-relaxed" id="import-stats-json-textarea" placeholder='{
+  "2026-11-15": { "seconds": 3000, "pomodoros": 2 },
+  "2026-11-16": { "seconds": 4500, "pomodoros": 3 }
+}'></textarea>
+      </div>
+
+      <div class="flex items-center justify-between p-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-outline-variant/30 text-xs">
+        <span class="font-semibold text-on-surface">Modo de importación:</span>
+        <div class="flex items-center gap-3">
+          <label class="inline-flex items-center gap-1 cursor-pointer">
+            <input checked class="text-primary focus:ring-primary" name="stats-import-mode" type="radio" value="merge">
+            <span class="text-xs text-on-surface">Combinar (sumar)</span>
+          </label>
+          <label class="inline-flex items-center gap-1 cursor-pointer">
+            <input class="text-primary focus:ring-primary" name="stats-import-mode" type="radio" value="replace">
+            <span class="text-xs text-on-surface">Reemplazar todo</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="hidden text-xs px-3 py-2 rounded-xl" id="import-stats-status-msg"></div>
+    </div>
+    <div class="flex items-center justify-end gap-2.5 mt-4 pt-3 border-t border-outline-variant/20">
+      <button class="px-4 py-2 rounded-full glass-pill text-on-surface text-xs font-semibold transition-all hover:bg-black/5 dark:hover:bg-white/5" id="btn-cancel-import-stats" type="button">
+        Cancelar
+      </button>
+      <button class="px-5 py-2 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all active:scale-95" id="btn-execute-import-stats" type="button">
+        <span class="material-symbols-outlined text-sm">download_done</span>
+        <span>Importar estadísticas</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 8: Exportar Estadísticas -->
+<div class="modal-backdrop-enter fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm transition-opacity duration-300" id="export-stats-modal">
+  <div class="modal-content-enter transition-all duration-300 w-full max-w-lg rounded-3xl p-4 sm:p-6 glass-card border shadow-2xl flex flex-col text-left max-h-[90vh] overflow-y-auto custom-scrollbar">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-outline-variant/20">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">file_download</span>
+        </div>
+        <div>
+          <h3 class="font-display text-lg font-bold text-on-surface">Exportar estadísticas</h3>
+          <p class="text-[11px] text-on-surface-variant" id="export-stats-modal-desc">Respaldo completo de tus días registrados</p>
+        </div>
+      </div>
+      <button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg" id="btn-close-export-stats-modal" type="button">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1.5 flex items-center justify-between">
+          <span>Datos JSON de estadísticas</span>
+          <span class="text-[10px] font-mono text-secondary">Formato compatible</span>
+        </label>
+        <textarea class="w-full text-xs font-mono bg-surface border border-outline-variant/50 rounded-xl p-2.5 text-on-surface select-all resize-none h-44 leading-relaxed cursor-text" id="export-stats-json-preview" readonly=""></textarea>
+      </div>
+      <p class="text-[11px] text-on-surface-variant/80">Guarda este archivo para conservar tu progreso semanal, mensual y anual o transferirlo a otro dispositivo.</p>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center justify-end gap-2.5 mt-4 pt-3 border-t border-outline-variant/20">
+      <button class="w-full sm:w-auto px-4 py-2 rounded-full glass-pill text-on-surface text-xs font-semibold transition-all flex items-center justify-center gap-1.5 hover:bg-black/5 dark:hover:bg-white/5" id="btn-copy-export-stats-json" type="button">
+        <span class="material-symbols-outlined text-sm">content_copy</span>
+        <span id="btn-copy-export-stats-text">Copiar JSON</span>
+      </button>
+      <button class="w-full sm:w-auto px-5 py-2 rounded-full bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5 transition-all active:scale-95" id="btn-download-export-stats-file" type="button">
+        <span class="material-symbols-outlined text-sm">download</span>
+        <span>Descargar estadisticas_pomodoro.json</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="app-toast" class="fixed bottom-4 right-4 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 glass-card px-4 py-2.5 rounded-2xl border shadow-xl flex items-center gap-2 text-xs font-semibold text-on-surface max-w-[calc(100vw-2rem)]">
+  <span class="material-symbols-outlined text-primary text-base shrink-0">check_circle</span>
+  <span id="app-toast-text" class="truncate"></span>
+</div>
+
+<!-- Lógica Interactiva Unificada en JS -->
+<script>
+    (function() {
+      // ==========================================
+      // 1. WEB WORKER PARA TEMPORIZADOR SIN THROTTLING EN SEGUNDO PLANO
+      // ==========================================
+      let timerWorker = null;
+      try {
+        const workerCode = `
+          let intervalId = null;
+          self.onmessage = function(e) {
+            if (e.data === 'start') {
+              if (intervalId) clearInterval(intervalId);
+              intervalId = setInterval(() => self.postMessage('tick'), 250);
+            } else if (e.data === 'stop') {
+              if (intervalId) clearInterval(intervalId);
+              intervalId = null;
+            }
+          };
+        `;
+        const blob = new Blob([workerCode], { type: 'application/javascript' });
+        timerWorker = new Worker(URL.createObjectURL(blob));
+      } catch (e) {
+        timerWorker = null;
+      }
+
+      // ==========================================
+      // 2. NOTIFICACIONES DEL SISTEMA OPERATIVO Y AUDIO EN SEGUNDO PLANO
+      // ==========================================
+      const TOMATO_ICON_SVG = "data:image/svg+xml," + encodeURIComponent(
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>" +
+        "<circle cx='50' cy='55' r='38' fill='#c93b2b'/>" +
+        "<ellipse cx='42' cy='46' rx='10' ry='6' fill='#df5c4c' opacity='0.6'/>" +
+        "<path d='M50,22 Q48,10 54,6 Q56,12 50,22 Z' fill='#3b6843'/>" +
+        "<path d='M50,22 Q34,16 28,24 Q38,24 50,22 Z' fill='#4d7c56'/>" +
+        "<path d='M50,22 Q66,16 72,24 Q62,24 50,22 Z' fill='#4d7c56'/>" +
+        "</svg>"
+      );
+
+      function buildChimeWavDataUrl() {
+        const sampleRate = 22050;
+        const duration = 2.2;
+        const numSamples = Math.floor(sampleRate * duration);
+        const buffer = new ArrayBuffer(44 + numSamples * 2);
+        const view = new DataView(buffer);
+
+        function writeString(offset, str) {
+          for (let i = 0; i < str.length; i++) {
+            view.setUint8(offset + i, str.charCodeAt(i));
+          }
+        }
+
+        writeString(0, 'RIFF');
+        view.setUint32(4, 36 + numSamples * 2, true);
+        writeString(8, 'WAVE');
+        writeString(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeString(36, 'data');
+        view.setUint32(40, numSamples * 2, true);
+
+        const notes = [
+          { freq: 587.33, start: 0.0, dur: 1.6, amp: 0.35 },
+          { freq: 880.00, start: 0.14, dur: 1.9, amp: 0.30 },
+          { freq: 1174.66, start: 0.30, dur: 2.1, amp: 0.25 }
+        ];
+
+        for (let i = 0; i < numSamples; i++) {
+          const t = i / sampleRate;
+          let sample = 0;
+          for (let n = 0; n < notes.length; n++) {
+            const note = notes[n];
+            if (t >= note.start) {
+              const dt = t - note.start;
+              const attack = Math.min(1, dt / 0.025);
+              const decay = Math.exp(-dt * 2.4);
+              sample += Math.sin(2 * Math.PI * note.freq * dt) * note.amp * attack * decay;
+            }
+          }
+          sample = Math.max(-1, Math.min(1, sample));
+          view.setInt16(44 + i * 2, sample * 32767, true);
+        }
+
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return 'data:audio/wav;base64,' + btoa(binary);
+      }
+
+      const chimeFallbackAudio = document.getElementById('chime-fallback-audio');
+      if (chimeFallbackAudio) {
+        try {
+          chimeFallbackAudio.src = buildChimeWavDataUrl();
+        } catch (e) {}
+      }
+
+      let audioCtx = null;
+      let audioUnlocked = false;
+
+      function unlockAudioEngine() {
+        if (audioUnlocked) return;
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+          }
+          if (chimeFallbackAudio && chimeFallbackAudio.src) {
+            const prevVol = chimeFallbackAudio.volume;
+            chimeFallbackAudio.volume = 0;
+            const p = chimeFallbackAudio.play();
+            if (p && p.then) {
+              p.then(() => {
+                chimeFallbackAudio.pause();
+                chimeFallbackAudio.currentTime = 0;
+                chimeFallbackAudio.volume = prevVol;
+                audioUnlocked = true;
+              }).catch(() => {});
+            }
+          }
+        } catch (e) {}
+      }
+
+      ['click', 'keydown', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, unlockAudioEngine, { passive: true });
+      });
+
+      function playChimeSound() {
+        const masterVol = volumeSlider ? Math.max(0.25, parseFloat(volumeSlider.value) || 0.7) : 0.7;
+
+        if (chimeFallbackAudio && chimeFallbackAudio.src) {
+          try {
+            chimeFallbackAudio.pause();
+            chimeFallbackAudio.currentTime = 0;
+            chimeFallbackAudio.volume = Math.min(1, masterVol);
+            chimeFallbackAudio.play().catch(() => {});
+          } catch (e) {}
+        }
+
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          if (!audioCtx) audioCtx = new AudioContext();
+          if (audioCtx.state === 'suspended') audioCtx.resume();
+
+          const now = audioCtx.currentTime;
+          const notes = [
+            { freq: 587.33, start: 0, dur: 1.8 },
+            { freq: 880.00, start: 0.15, dur: 2.2 },
+            { freq: 1174.66, start: 0.35, dur: 2.5 }
+          ];
+
+          notes.forEach(note => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(note.freq, now + note.start);
+            gain.gain.setValueAtTime(0, now + note.start);
+            gain.gain.linearRampToValueAtTime(0.22 * masterVol, now + note.start + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + note.start + note.dur);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + note.start);
+            osc.stop(now + note.start + note.dur);
+          });
+        } catch (e) {}
+      }
+
+      function requestDesktopNotificationPermission(silent = false) {
+        if (!('Notification' in window)) {
+          if (!silent) showToast('Tu navegador no soporta notificaciones de escritorio');
+          return Promise.resolve('unsupported');
+        }
+        if (Notification.permission === 'granted') {
+          return Promise.resolve('granted');
+        }
+        if (Notification.permission === 'denied') {
+          return Promise.resolve('denied');
+        }
+        return Notification.requestPermission().then(permission => {
+          if (!silent && permission === 'granted') {
+            showToast('¡Notificaciones de escritorio activadas!');
+          }
+          return permission;
+        });
+      }
+
+      function sendDesktopNotification(title, body) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        try {
+          const notification = new Notification(title, {
+            body: body,
+            icon: TOMATO_ICON_SVG,
+            badge: TOMATO_ICON_SVG,
+            tag: 'pomodoro-phase-alert',
+            renotify: true,
+            requireInteraction: true,
+            silent: false
+          });
+          notification.onclick = function() {
+            try { window.focus(); } catch (e) {}
+            notification.close();
+          };
+        } catch (e) {}
+      }
+
+      const btnTestNotification = document.getElementById('btn-test-notification');
+      if (btnTestNotification) {
+        btnTestNotification.addEventListener('click', () => {
+          unlockAudioEngine();
+          requestDesktopNotificationPermission(false).then(perm => {
+            playChimeSound();
+            if (perm === 'granted') {
+              sendDesktopNotification('Prueba de notificación Pomodoro', 'Así te avisaremos al completar cada sesión de enfoque o descanso.');
+            }
+          });
+        });
+      }
+
+      // ==========================================
+      // 3. ESTADÍSTICAS SEMANALES, MENSUALES Y ANUALES + IMPORTAR/EXPORTAR
+      // ==========================================
+      const STATS_STORAGE_KEY = 'pomodoro_weekly_stats_v1';
+      let currentStatsPeriod = 'weekly'; // 'weekly' | 'monthly' | 'yearly'
+      let currentStatsOffset = 0; // 0 = actual, -1 = anterior, +1 = siguiente
+
+      function getTodayDateKey(dateObj = new Date()) {
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function loadWeeklyStats() {
+        try {
+          const raw = localStorage.getItem(STATS_STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') return parsed;
+          }
+        } catch (e) {}
+        return {};
+      }
+
+      let dailyStatsMap = loadWeeklyStats();
+
+      function saveWeeklyStats() {
+        try {
+          localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(dailyStatsMap));
+        } catch (e) {}
+      }
+
+      function recordFocusStats(secondsAdded, pomodorosAdded) {
+        const key = getTodayDateKey();
+        if (!dailyStatsMap[key]) {
+          dailyStatsMap[key] = { seconds: 0, pomodoros: 0 };
+        }
+        dailyStatsMap[key].seconds += (secondsAdded || 0);
+        dailyStatsMap[key].pomodoros += (pomodorosAdded || 0);
+        saveWeeklyStats();
+      }
+
+      function getWeekData(offset = 0) {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0 = Dom, 1 = Lun...
+        const diffToMonday = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek) + (offset * 7);
+        const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday);
+        const dayNames = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+        const todayKey = getTodayDateKey(now);
+
+        const items = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+          const key = getTodayDateKey(d);
+          const entry = dailyStatsMap[key] || { seconds: 0, pomodoros: 0 };
+          items.push({
+            key: key,
+            label: dayNames[i],
+            subLabel: String(d.getDate()),
+            fullTitle: `${dayNames[i]} ${d.getDate()} ${d.toLocaleDateString('es-ES', { month: 'short' })}`,
+            seconds: entry.seconds || 0,
+            pomodoros: entry.pomodoros || 0,
+            isCurrent: key === todayKey
+          });
+        }
+
+        const rangeText = `Semana del ${items[0].subLabel} ${monday.toLocaleDateString('es-ES', { month: 'short' })} al ${items[6].subLabel} ${new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + 6).toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}`;
+        return {
+          title: 'Estadísticas semanales',
+          rangeLabel: rangeText,
+          items: items,
+          divisor: 7,
+          avgTitle: 'Promedio diario',
+          avgSubtitle: 'Calculado sobre 7 días',
+          chartSubtitle: 'Actividad diaria (minutos de concentración)',
+          legendCurrent: 'Hoy',
+          legendOthers: 'Otros días',
+          activeUnitSingular: 'día activo',
+          activeUnitPlural: 'días activos',
+          gridColsClass: 'grid-cols-7 gap-1.5 sm:gap-3 min-w-0',
+          barMaxWidthClass: 'max-w-[36px]'
+        };
+      }
+
+      function getMonthData(offset = 0) {
+        const now = new Date();
+        const targetDate = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+        const year = targetDate.getFullYear();
+        const month = targetDate.getMonth();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const todayKey = getTodayDateKey(now);
+
+        const items = [];
+        for (let day = 1; day <= daysInMonth; day++) {
+          const d = new Date(year, month, day);
+          const key = getTodayDateKey(d);
+          const entry = dailyStatsMap[key] || { seconds: 0, pomodoros: 0 };
+          items.push({
+            key: key,
+            label: String(day),
+            subLabel: d.toLocaleDateString('es-ES', { weekday: 'narrow' }).toUpperCase(),
+            fullTitle: `${day} de ${d.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`,
+            seconds: entry.seconds || 0,
+            pomodoros: entry.pomodoros || 0,
+            isCurrent: key === todayKey
+          });
+        }
+
+        const monthName = targetDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+        return {
+          title: 'Estadísticas mensuales',
+          rangeLabel: `${capitalizedMonth} (${daysInMonth} días)`,
+          items: items,
+          divisor: daysInMonth,
+          avgTitle: 'Promedio diario',
+          avgSubtitle: `Calculado sobre ${daysInMonth} días`,
+          chartSubtitle: 'Actividad diaria del mes (minutos de concentración)',
+          legendCurrent: 'Hoy',
+          legendOthers: 'Días del mes',
+          activeUnitSingular: 'día activo',
+          activeUnitPlural: 'días activos',
+          gridColsClass: 'grid-flow-col auto-cols-[minmax(22px,1fr)] gap-1 min-w-[620px] sm:min-w-0',
+          barMaxWidthClass: 'max-w-[18px]'
+        };
+      }
+
+      function getYearData(offset = 0) {
+        const now = new Date();
+        const targetYear = now.getFullYear() + offset;
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth();
+        const monthShortNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+        const items = [];
+        for (let m = 0; m < 12; m++) {
+          const monthPrefix = `${targetYear}-${String(m + 1).padStart(2, '0')}-`;
+          let monthSecs = 0;
+          let monthPomos = 0;
+
+          Object.keys(dailyStatsMap).forEach(dateKey => {
+            if (dateKey.startsWith(monthPrefix)) {
+              const entry = dailyStatsMap[dateKey];
+              if (entry) {
+                monthSecs += (entry.seconds || 0);
+                monthPomos += (entry.pomodoros || 0);
+              }
+            }
+          });
+
+          items.push({
+            key: `${targetYear}-${String(m + 1).padStart(2, '0')}`,
+            label: monthShortNames[m],
+            subLabel: String(targetYear).slice(-2),
+            fullTitle: `${new Date(targetYear, m, 1).toLocaleDateString('es-ES', { month: 'long' })} ${targetYear}`,
+            seconds: monthSecs,
+            pomodoros: monthPomos,
+            isCurrent: (targetYear === currentYear && m === currentMonth)
+          });
+        }
+
+        return {
+          title: 'Estadísticas anuales',
+          rangeLabel: `Año ${targetYear} (Enero – Diciembre)`,
+          items: items,
+          divisor: 12,
+          avgTitle: 'Promedio mensual',
+          avgSubtitle: 'Calculado sobre 12 meses',
+          chartSubtitle: 'Actividad mensual del año (tiempo de concentración)',
+          legendCurrent: 'Mes actual',
+          legendOthers: 'Otros meses',
+          activeUnitSingular: 'mes activo',
+          activeUnitPlural: 'meses activos',
+          gridColsClass: 'grid-cols-12 gap-1 sm:gap-2 min-w-[460px] sm:min-w-0',
+          barMaxWidthClass: 'max-w-[28px]'
+        };
+      }
+
+      const weeklyStatsModal = document.getElementById('weekly-stats-modal');
+      const btnOpenStats = document.getElementById('btn-open-stats');
+      const btnCloseStatsModal = document.getElementById('btn-close-stats-modal');
+      const btnDoneStats = document.getElementById('btn-done-stats');
+      const btnResetWeeklyStats = document.getElementById('btn-reset-weekly-stats');
+      const statsPeriodButtons = document.querySelectorAll('.stats-period-btn');
+      const btnStatsPrevPeriod = document.getElementById('btn-stats-prev-period');
+      const btnStatsNextPeriod = document.getElementById('btn-stats-next-period');
+      const btnStatsCurrentPeriod = document.getElementById('btn-stats-current-period');
+
+      function formatDurationShort(totalSecs) {
+        const mins = Math.floor((totalSecs || 0) / 60);
+        const hours = Math.floor(mins / 60);
+        const remMins = mins % 60;
+        if (hours > 0) return `${hours}h ${remMins}m`;
+        return `${mins}m`;
+      }
+
+      function renderStatsModal() {
+        let periodData;
+        if (currentStatsPeriod === 'monthly') periodData = getMonthData(currentStatsOffset);
+        else if (currentStatsPeriod === 'yearly') periodData = getYearData(currentStatsOffset);
+        else periodData = getWeekData(currentStatsOffset);
+
+        const items = periodData.items;
+        const totalSecs = items.reduce((acc, d) => acc + d.seconds, 0);
+        const totalPomos = items.reduce((acc, d) => acc + d.pomodoros, 0);
+        const activeCount = items.filter(d => d.seconds > 0 || d.pomodoros > 0).length;
+        const avgSecs = Math.floor(totalSecs / periodData.divisor);
+
+        let bestItem = null;
+        items.forEach(d => {
+          if (d.seconds > 0 && (!bestItem || d.seconds > bestItem.seconds)) {
+            bestItem = d;
+          }
+        });
+
+        const titleEl = document.getElementById('stats-modal-title');
+        const rangeEl = document.getElementById('stats-period-range-label');
+        const totalTimeEl = document.getElementById('stats-total-time');
+        const bestDayEl = document.getElementById('stats-best-day-label');
+        const totalPomosEl = document.getElementById('stats-total-pomodoros');
+        const activeDaysEl = document.getElementById('stats-active-days-label');
+        const avgTitleEl = document.getElementById('stats-avg-title');
+        const dailyAvgEl = document.getElementById('stats-daily-avg');
+        const avgSubtitleEl = document.getElementById('stats-avg-subtitle');
+        const chartSubtitleEl = document.getElementById('stats-chart-subtitle');
+        const legendCurrentEl = document.getElementById('stats-legend-current');
+        const legendOthersEl = document.getElementById('stats-legend-others');
+        const barsContainer = document.getElementById('stats-bars-container');
+
+        if (titleEl) titleEl.textContent = periodData.title;
+        if (rangeEl) rangeEl.textContent = periodData.rangeLabel;
+        if (totalTimeEl) totalTimeEl.textContent = formatDurationShort(totalSecs);
+        if (bestDayEl) {
+          bestDayEl.textContent = bestItem
+            ? `Mejor: ${bestItem.fullTitle} (${formatDurationShort(bestItem.seconds)})`
+            : 'Mejor: Sin registros';
+        }
+        if (totalPomosEl) totalPomosEl.textContent = String(totalPomos);
+        if (activeDaysEl) {
+          activeDaysEl.textContent = `${activeCount} ${activeCount === 1 ? periodData.activeUnitSingular : periodData.activeUnitPlural}`;
+        }
+        if (avgTitleEl) avgTitleEl.textContent = periodData.avgTitle;
+        if (dailyAvgEl) dailyAvgEl.textContent = formatDurationShort(avgSecs);
+        if (avgSubtitleEl) avgSubtitleEl.textContent = periodData.avgSubtitle;
+        if (chartSubtitleEl) chartSubtitleEl.textContent = periodData.chartSubtitle;
+        if (legendCurrentEl) legendCurrentEl.textContent = periodData.legendCurrent;
+        if (legendOthersEl) legendOthersEl.textContent = periodData.legendOthers;
+
+        if (barsContainer) {
+          barsContainer.className = `grid ${periodData.gridColsClass} items-end h-44 pt-5 px-1`;
+          const defaultMinScale = currentStatsPeriod === 'yearly' ? 3600 : 1500;
+          const maxSecs = Math.max(defaultMinScale, ...items.map(d => d.seconds));
+
+          barsContainer.innerHTML = items.map(item => {
+            const mins = Math.round(item.seconds / 60);
+            const topLabel = currentStatsPeriod === 'yearly' && mins >= 60
+              ? `${Math.floor(mins / 60)}h`
+              : (mins > 0 ? `${mins}m` : '0');
+            const heightPct = item.seconds > 0 ? Math.max(10, Math.round((item.seconds / maxSecs) * 100)) : 4;
+            const barColorClass = item.isCurrent
+              ? 'bg-primary shadow-sm'
+              : (item.seconds > 0 ? 'bg-secondary/80' : 'bg-outline-variant/30');
+
+            return `
+              <div class="flex flex-col items-center justify-end h-full group" title="${item.fullTitle}: ${formatDurationShort(item.seconds)} (${item.pomodoros} pomodoros)">
+                <span class="text-[9px] sm:text-[10px] font-mono font-bold text-on-surface-variant mb-1 opacity-85 group-hover:opacity-100 whitespace-nowrap">
+                  ${topLabel}
+                </span>
+                <div class="w-full ${periodData.barMaxWidthClass} flex-1 flex items-end justify-center">
+                  <div class="w-full rounded-t-lg sm:rounded-t-xl transition-all duration-500 ${barColorClass}" style="height: ${heightPct}%;"></div>
+                </div>
+                <div class="mt-1.5 flex flex-col items-center">
+                  <span class="text-[10px] sm:text-[11px] font-bold ${item.isCurrent ? 'text-primary' : 'text-on-surface'}">${item.label}</span>
+                  ${currentStatsPeriod !== 'yearly' ? `<span class="text-[8px] sm:text-[9px] font-mono text-on-surface-variant">${item.subLabel}</span>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      statsPeriodButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          statsPeriodButtons.forEach(b => {
+            b.classList.remove('bg-surface', 'text-primary', 'shadow-xs', 'font-semibold');
+            b.classList.add('font-medium', 'text-on-surface-variant');
+          });
+          btn.classList.add('bg-surface', 'text-primary', 'shadow-xs', 'font-semibold');
+          btn.classList.remove('font-medium', 'text-on-surface-variant');
+          currentStatsPeriod = btn.getAttribute('data-period') || 'weekly';
+          currentStatsOffset = 0;
+          renderStatsModal();
+        });
+      });
+
+      if (btnStatsPrevPeriod) {
+        btnStatsPrevPeriod.addEventListener('click', () => {
+          currentStatsOffset -= 1;
+          renderStatsModal();
+        });
+      }
+      if (btnStatsNextPeriod) {
+        btnStatsNextPeriod.addEventListener('click', () => {
+          currentStatsOffset += 1;
+          renderStatsModal();
+        });
+      }
+      if (btnStatsCurrentPeriod) {
+        btnStatsCurrentPeriod.addEventListener('click', () => {
+          currentStatsOffset = 0;
+          renderStatsModal();
+        });
+      }
+
+      if (btnOpenStats) {
+        btnOpenStats.addEventListener('click', () => {
+          renderStatsModal();
+          showModal(weeklyStatsModal);
+        });
+      }
+      if (btnCloseStatsModal) btnCloseStatsModal.addEventListener('click', () => hideModal(weeklyStatsModal));
+      if (btnDoneStats) btnDoneStats.addEventListener('click', () => hideModal(weeklyStatsModal));
+      if (btnResetWeeklyStats) {
+        btnResetWeeklyStats.addEventListener('click', () => {
+          dailyStatsMap = {};
+          saveWeeklyStats();
+          renderStatsModal();
+          showToast('Historial de estadísticas reiniciado');
+        });
+      }
+
+      // ==========================================
+      // 3.1 EXPORTAR E IMPORTAR ESTADÍSTICAS
+      // ==========================================
+      const importStatsModal = document.getElementById('import-stats-modal');
+      const btnOpenImportStats = document.getElementById('btn-open-import-stats');
+      const btnCloseImportStatsModal = document.getElementById('btn-close-import-stats-modal');
+      const btnCancelImportStats = document.getElementById('btn-cancel-import-stats');
+      const btnExecuteImportStats = document.getElementById('btn-execute-import-stats');
+      const importStatsFileInput = document.getElementById('import-stats-file-input');
+      const importStatsTextarea = document.getElementById('import-stats-json-textarea');
+      const importStatsStatusMsg = document.getElementById('import-stats-status-msg');
+      const btnFillExampleStatsJson = document.getElementById('btn-fill-example-stats-json');
+
+      const exportStatsModal = document.getElementById('export-stats-modal');
+      const btnOpenExportStats = document.getElementById('btn-open-export-stats');
+      const btnCloseExportStatsModal = document.getElementById('btn-close-export-stats-modal');
+      const exportStatsPreview = document.getElementById('export-stats-json-preview');
+      const exportStatsModalDesc = document.getElementById('export-stats-modal-desc');
+      const btnCopyExportStatsJson = document.getElementById('btn-copy-export-stats-json');
+      const btnCopyExportStatsText = document.getElementById('btn-copy-export-stats-text');
+      const btnDownloadExportStatsFile = document.getElementById('btn-download-export-stats-file');
+
+      function downloadStatsFile(dataString) {
+        const blob = new Blob([dataString], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'estadisticas_pomodoro.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      if (btnOpenExportStats) {
+        btnOpenExportStats.addEventListener('click', () => {
+          const payload = {
+            version: 1,
+            exportadoEn: new Date().toISOString(),
+            estadisticasDiarias: dailyStatsMap
+          };
+          const jsonStr = JSON.stringify(payload, null, 2);
+          const totalDays = Object.keys(dailyStatsMap).length;
+          if (exportStatsPreview) exportStatsPreview.value = jsonStr;
+          if (exportStatsModalDesc) {
+            exportStatsModalDesc.textContent = `${totalDays} día${totalDays === 1 ? '' : 's'} registrados listos para exportar`;
+          }
+          if (btnCopyExportStatsText) btnCopyExportStatsText.textContent = 'Copiar JSON';
+          showModal(exportStatsModal);
+          downloadStatsFile(jsonStr);
+        });
+      }
+
+      if (btnCloseExportStatsModal) btnCloseExportStatsModal.addEventListener('click', () => hideModal(exportStatsModal));
+
+      if (btnDownloadExportStatsFile) {
+        btnDownloadExportStatsFile.addEventListener('click', () => {
+          if (exportStatsPreview) downloadStatsFile(exportStatsPreview.value);
+        });
+      }
+
+      if (btnCopyExportStatsJson) {
+        btnCopyExportStatsJson.addEventListener('click', () => {
+          const text = exportStatsPreview.value;
+          const fallbackCopy = () => {
+            exportStatsPreview.select();
+            document.execCommand('copy');
+            btnCopyExportStatsText.textContent = '¡Copiado!';
+            setTimeout(() => { btnCopyExportStatsText.textContent = 'Copiar JSON'; }, 2000);
+          };
+          if (!navigator.clipboard) {
+            fallbackCopy();
+            return;
+          }
+          navigator.clipboard.writeText(text).then(() => {
+            btnCopyExportStatsText.textContent = '¡Copiado!';
+            setTimeout(() => { btnCopyExportStatsText.textContent = 'Copiar JSON'; }, 2000);
+          }).catch(fallbackCopy);
+        });
+      }
+
+      function showImportStatsStatus(text, isError) {
+        importStatsStatusMsg.textContent = text;
+        importStatsStatusMsg.className = `text-xs px-3 py-2 rounded-xl transition-all ${
+          isError
+            ? 'bg-red-500/20 text-red-700 dark:text-red-300 border border-red-500/40'
+            : 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border border-emerald-500/40'
+        }`;
+        importStatsStatusMsg.classList.remove('hidden');
+      }
+
+      function hideImportStatsStatus() {
+        importStatsStatusMsg.classList.add('hidden');
+        importStatsStatusMsg.textContent = '';
+      }
+
+      if (btnOpenImportStats) {
+        btnOpenImportStats.addEventListener('click', () => {
+          if (importStatsTextarea) importStatsTextarea.value = '';
+          if (importStatsFileInput) importStatsFileInput.value = '';
+          hideImportStatsStatus();
+          showModal(importStatsModal);
+        });
+      }
+
+      if (btnCloseImportStatsModal) btnCloseImportStatsModal.addEventListener('click', () => hideModal(importStatsModal));
+      if (btnCancelImportStats) btnCancelImportStats.addEventListener('click', () => hideModal(importStatsModal));
+
+      if (btnFillExampleStatsJson) {
+        btnFillExampleStatsJson.addEventListener('click', () => {
+          const today = new Date();
+          const yesterday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+          const sample = {
+            estadisticasDiarias: {
+              [getTodayDateKey(yesterday)]: { seconds: 4500, pomodoros: 3 },
+              [getTodayDateKey(today)]: { seconds: 3000, pomodoros: 2 }
+            }
+          };
+          importStatsTextarea.value = JSON.stringify(sample, null, 2);
+          hideImportStatsStatus();
+        });
+      }
+
+      if (importStatsFileInput) {
+        importStatsFileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            importStatsTextarea.value = evt.target.result;
+            hideImportStatsStatus();
+          };
+          reader.onerror = function() {
+            showImportStatsStatus('Error al leer el archivo seleccionado.', true);
+          };
+          reader.readAsText(file);
+        });
+      }
+
+      if (btnExecuteImportStats) {
+        btnExecuteImportStats.addEventListener('click', () => {
+          const rawText = importStatsTextarea.value.trim();
+          if (!rawText) {
+            showImportStatsStatus('Por favor ingresa texto JSON o selecciona un archivo .json.', true);
+            return;
+          }
+
+          try {
+            const parsed = JSON.parse(rawText);
+            if (!parsed || typeof parsed !== 'object') {
+              showImportStatsStatus('Formato JSON inválido.', true);
+              return;
+            }
+
+            const sourceObj = (parsed.estadisticasDiarias && typeof parsed.estadisticasDiarias === 'object')
+              ? parsed.estadisticasDiarias
+              : ((parsed.dailyStats && typeof parsed.dailyStats === 'object') ? parsed.dailyStats : parsed);
+
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            const validEntries = {};
+            let count = 0;
+
+            Object.keys(sourceObj).forEach(key => {
+              if (dateRegex.test(key) && sourceObj[key] && typeof sourceObj[key] === 'object') {
+                const secs = Math.max(0, parseInt(sourceObj[key].seconds ?? sourceObj[key].segundos ?? 0, 10) || 0);
+                const pomos = Math.max(0, parseInt(sourceObj[key].pomodoros ?? 0, 10) || 0);
+                validEntries[key] = { seconds: secs, pomodoros: pomos };
+                count++;
+              }
+            });
+
+            if (count === 0) {
+              showImportStatsStatus('No se encontraron registros con fechas válidas (AAAA-MM-DD).', true);
+              return;
+            }
+
+            const modeRadio = document.querySelector('input[name="stats-import-mode"]:checked');
+            const mode = modeRadio ? modeRadio.value : 'merge';
+
+            if (mode === 'replace') {
+              dailyStatsMap = validEntries;
+            } else {
+              Object.keys(validEntries).forEach(dateKey => {
+                if (!dailyStatsMap[dateKey]) {
+                  dailyStatsMap[dateKey] = { seconds: 0, pomodoros: 0 };
+                }
+                dailyStatsMap[dateKey].seconds += validEntries[dateKey].seconds;
+                dailyStatsMap[dateKey].pomodoros += validEntries[dateKey].pomodoros;
+              });
+            }
+
+            saveWeeklyStats();
+            renderStatsModal();
+            showImportStatsStatus(`¡Se importaron ${count} día(s) de estadísticas con éxito!`, false);
+            setTimeout(() => { hideModal(importStatsModal); }, 800);
+          } catch (err) {
+            showImportStatsStatus('Error de sintaxis JSON. Verifica las llaves y comillas.', true);
+          }
+        });
+      }
+
+      // ==========================================
+      // CONFIGURACIÓN Y CICLOS DINÁMICOS
+      // ==========================================
+      const SETTINGS_KEY = 'pomodoro_settings_v3';
+      const defaultSettings = {
+        pomodoroMin: 25,
+        shortMin: 5,
+        longMin: 15,
+        autoStartBreak: false,
+        autoStartPomodoro: false
+      };
+
+      function loadSettings() {
+        try {
+          const saved = localStorage.getItem(SETTINGS_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            return {
+              pomodoroMin: Math.max(1, parseInt(parsed.pomodoroMin, 10) || defaultSettings.pomodoroMin),
+              shortMin: Math.max(1, parseInt(parsed.shortMin, 10) || defaultSettings.shortMin),
+              longMin: Math.max(1, parseInt(parsed.longMin, 10) || defaultSettings.longMin),
+              autoStartBreak: Boolean(parsed.autoStartBreak),
+              autoStartPomodoro: Boolean(parsed.autoStartPomodoro)
+            };
+          }
+        } catch (e) {}
+        return Object.assign({}, defaultSettings);
+      }
+
+      let appSettings = loadSettings();
+
+      function buildPomodoroCycle(settings) {
+        const pSec = settings.pomodoroMin * 60;
+        const sSec = settings.shortMin * 60;
+        const lSec = settings.longMin * 60;
+        return [
+          { id: 1, type: 'pomodoro', name: 'Concentración 1',  label: `Concentración (${settings.pomodoroMin} min)`, duration: pSec },
+          { id: 2, type: 'short',    name: 'Descanso corto 1', label: `Pausa Corta (${settings.shortMin} min)`,     duration: sSec },
+          { id: 3, type: 'pomodoro', name: 'Concentración 2',  label: `Concentración (${settings.pomodoroMin} min)`, duration: pSec },
+          { id: 4, type: 'short',    name: 'Descanso corto 2', label: `Pausa Corta (${settings.shortMin} min)`,     duration: sSec },
+          { id: 5, type: 'pomodoro', name: 'Concentración 3',  label: `Concentración (${settings.pomodoroMin} min)`, duration: pSec },
+          { id: 6, type: 'short',    name: 'Descanso corto 3', label: `Pausa Corta (${settings.shortMin} min)`,     duration: sSec },
+          { id: 7, type: 'pomodoro', name: 'Concentración 4',  label: `Concentración (${settings.pomodoroMin} min)`, duration: pSec },
+          { id: 8, type: 'long',     name: 'Descanso largo',   label: `Pausa Larga (${settings.longMin} min)`,      duration: lSec }
+        ];
+      }
+
+      let POMODORO_CYCLE = buildPomodoroCycle(appSettings);
+
+      let phaseIndex = 0;
+      let completedCycles = 0;
+      let focusStreak = 0;
+      let breakStreak = 0;
+      let totalSeconds = POMODORO_CYCLE[0].duration;
+      let secondsLeft = totalSeconds;
+      let isRunning = false;
+      let timerInterval = null;
+      let endTimestamp = null;
+      let lastRecordedTaskTick = null;
+      let pendingModeChange = null;
+
+      const display = document.getElementById('timer-display');
+      const phaseSubtitle = document.getElementById('timer-phase-subtitle');
+      const progressRing = document.getElementById('timer-progress');
+      const toggleBtn = document.getElementById('btn-toggle-play');
+      const iconState = document.getElementById('btn-icon-state');
+      const labelState = document.getElementById('btn-label-state');
+      const resetBtn = document.getElementById('btn-reset');
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      const ambientSelect = document.getElementById('ambient-sound-select');
+      const ambientIcon = document.getElementById('ambient-icon');
+      const ambientAudio = document.getElementById('ambient-audio');
+      const volumeSlider = document.getElementById('volume-slider');
+      const volumeLabel = document.getElementById('volume-label');
+      const volumeIcon = document.getElementById('volume-icon');
+
+      const modePomodoro = document.getElementById('btn-mode-pomodoro');
+      const modeShort = document.getElementById('btn-mode-short');
+      const modeLong = document.getElementById('btn-mode-long');
+
+      const streakCycleStatus = document.getElementById('streak-cycle-status');
+      const streakTotalCycles = document.getElementById('streak-total-cycles');
+      const focusCounterLabel = document.getElementById('focus-counter-label');
+      const breakCounterLabel = document.getElementById('break-counter-label');
+      const focusDots = document.querySelectorAll('.focus-dot');
+      const breakDots = document.querySelectorAll('.break-dot');
+
+      const phaseModal = document.getElementById('phase-complete-modal');
+      const modalPhaseTitle = document.getElementById('modal-phase-title');
+      const modalPhaseDesc = document.getElementById('modal-phase-desc');
+      const btnModalPrepareNext = document.getElementById('btn-modal-prepare-next');
+
+      const streakModal = document.getElementById('streak-warning-modal');
+      const btnCancelChange = document.getElementById('btn-cancel-change');
+      const btnConfirmChange = document.getElementById('btn-confirm-change');
+
+      const btnOpenSettings = document.getElementById('btn-open-settings');
+      const settingsModal = document.getElementById('settings-modal');
+      const btnCloseSettingsModal = document.getElementById('btn-close-settings-modal');
+      const btnCancelSettings = document.getElementById('btn-cancel-settings');
+      const btnSaveSettings = document.getElementById('btn-save-settings');
+      const btnResetDefault = document.getElementById('btn-reset-default-settings');
+
+      const pomodoroSlider = document.getElementById('setting-pomodoro-slider');
+      const pomodoroInput = document.getElementById('setting-pomodoro-duration');
+      const pomodoroVal = document.getElementById('setting-pomodoro-val');
+
+      const shortSlider = document.getElementById('setting-short-slider');
+      const shortInput = document.getElementById('setting-short-duration');
+      const shortVal = document.getElementById('setting-short-val');
+
+      const longSlider = document.getElementById('setting-long-slider');
+      const longInput = document.getElementById('setting-long-duration');
+      const longVal = document.getElementById('setting-long-val');
+
+      const autoBreakCheckbox = document.getElementById('setting-autostart-break');
+      const autoPomodoroCheckbox = document.getElementById('setting-autostart-pomodoro');
+
+      const importModal = document.getElementById('import-task-modal');
+      const btnShowImportTask = document.getElementById('btn-show-import-task');
+      const btnCloseImportModal = document.getElementById('btn-close-import-modal');
+      const btnCancelImport = document.getElementById('btn-cancel-import');
+      const btnExecuteImport = document.getElementById('btn-execute-import');
+      const importFileInput = document.getElementById('import-file-input');
+      const importJsonTextarea = document.getElementById('import-json-textarea');
+      const importStatusMsg = document.getElementById('import-status-msg');
+      const btnFillExampleJson = document.getElementById('btn-fill-example-json');
+
+      const exportModal = document.getElementById('export-task-modal');
+      const btnExportTasks = document.getElementById('btn-export-tasks');
+      const btnCloseExportModal = document.getElementById('btn-close-export-modal');
+      const exportJsonPreview = document.getElementById('export-json-preview');
+      const exportModalCountDesc = document.getElementById('export-modal-count-desc');
+      const btnCopyExportJson = document.getElementById('btn-copy-export-json');
+      const btnCopyExportText = document.getElementById('btn-copy-export-text');
+      const btnDownloadExportFile = document.getElementById('btn-download-export-file');
+
+      const circumference = 2 * Math.PI * 105;
+
+      function showToast(msg) {
+        const toast = document.getElementById('app-toast');
+        const toastText = document.getElementById('app-toast-text');
+        if (toast && toastText) {
+          toastText.textContent = msg;
+          toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-12');
+          toast.classList.add('opacity-100', 'translate-y-0');
+          setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-12');
+          }, 3000);
+        }
+      }
+
+      // ==========================================
+      // CONTROLADOR DE AJUSTES DEL TEMPORIZADOR
+      // ==========================================
+      function syncPair(slider, input, label, value) {
+        const num = Math.max(1, parseInt(value, 10) || 1);
+        if (slider) slider.value = num;
+        if (input) input.value = num;
+        if (label) label.textContent = `${num} min`;
+      }
+
+      function populateSettingsForm() {
+        syncPair(pomodoroSlider, pomodoroInput, pomodoroVal, appSettings.pomodoroMin);
+        syncPair(shortSlider, shortInput, shortVal, appSettings.shortMin);
+        syncPair(longSlider, longInput, longVal, appSettings.longMin);
+        if (autoBreakCheckbox) autoBreakCheckbox.checked = !!appSettings.autoStartBreak;
+        if (autoPomodoroCheckbox) autoPomodoroCheckbox.checked = !!appSettings.autoStartPomodoro;
+      }
+
+      if (pomodoroSlider && pomodoroInput) {
+        pomodoroSlider.addEventListener('input', (e) => syncPair(pomodoroSlider, pomodoroInput, pomodoroVal, e.target.value));
+        pomodoroInput.addEventListener('input', (e) => syncPair(pomodoroSlider, pomodoroInput, pomodoroVal, e.target.value));
+      }
+      if (shortSlider && shortInput) {
+        shortSlider.addEventListener('input', (e) => syncPair(shortSlider, shortInput, shortVal, e.target.value));
+        shortInput.addEventListener('input', (e) => syncPair(shortSlider, shortInput, shortVal, e.target.value));
+      }
+      if (longSlider && longInput) {
+        longSlider.addEventListener('input', (e) => syncPair(longSlider, longInput, longVal, e.target.value));
+        longInput.addEventListener('input', (e) => syncPair(longSlider, longInput, longVal, e.target.value));
+      }
+
+      if (btnOpenSettings) {
+        btnOpenSettings.addEventListener('click', () => {
+          populateSettingsForm();
+          showModal(settingsModal);
+        });
+      }
+
+      if (btnCloseSettingsModal) btnCloseSettingsModal.addEventListener('click', () => hideModal(settingsModal));
+      if (btnCancelSettings) btnCancelSettings.addEventListener('click', () => hideModal(settingsModal));
+
+      if (btnResetDefault) {
+        btnResetDefault.addEventListener('click', () => {
+          syncPair(pomodoroSlider, pomodoroInput, pomodoroVal, defaultSettings.pomodoroMin);
+          syncPair(shortSlider, shortInput, shortVal, defaultSettings.shortMin);
+          syncPair(longSlider, longInput, longVal, defaultSettings.longMin);
+          if (autoBreakCheckbox) autoBreakCheckbox.checked = defaultSettings.autoStartBreak;
+          if (autoPomodoroCheckbox) autoPomodoroCheckbox.checked = defaultSettings.autoStartPomodoro;
+        });
+      }
+
+      if (btnSaveSettings) {
+        btnSaveSettings.addEventListener('click', () => {
+          const newPomo = Math.max(1, parseInt(pomodoroInput ? pomodoroInput.value : defaultSettings.pomodoroMin, 10) || defaultSettings.pomodoroMin);
+          const newShort = Math.max(1, parseInt(shortInput ? shortInput.value : defaultSettings.shortMin, 10) || defaultSettings.shortMin);
+          const newLong = Math.max(1, parseInt(longInput ? longInput.value : defaultSettings.longMin, 10) || defaultSettings.longMin);
+          const newAutoBreak = autoBreakCheckbox ? !!autoBreakCheckbox.checked : false;
+          const newAutoPomo = autoPomodoroCheckbox ? !!autoPomodoroCheckbox.checked : false;
+
+          const durationsChanged = (
+            newPomo !== appSettings.pomodoroMin ||
+            newShort !== appSettings.shortMin ||
+            newLong !== appSettings.longMin
+          );
+
+          appSettings = {
+            pomodoroMin: newPomo,
+            shortMin: newShort,
+            longMin: newLong,
+            autoStartBreak: newAutoBreak,
+            autoStartPomodoro: newAutoPomo
+          };
+
+          try {
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
+          } catch (e) {}
+
+          if (durationsChanged) {
+            POMODORO_CYCLE = buildPomodoroCycle(appSettings);
+            pauseTimer();
+            phaseIndex = 0;
+            focusStreak = 0;
+            breakStreak = 0;
+            totalSeconds = POMODORO_CYCLE[0].duration;
+            secondsLeft = totalSeconds;
+            labelState.textContent = 'Iniciar';
+            iconState.textContent = 'play_arrow';
+            updateDisplay();
+            showToast('Duraciones actualizadas y ciclo actual reiniciado');
+          } else {
+            showToast('Ajustes de inicio automático guardados');
+          }
+
+          hideModal(settingsModal);
+        });
+      }
+
+      // ==========================================
+      // GESTIÓN DE TAREAS
+      // ==========================================
+      const STORAGE_KEY = 'pomodoro_tasks_v3';
+      let tasks = [];
+      let activeTaskId = null;
+      let currentFilter = 'all';
+
+      function loadTasks() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('pomodoro_tasks_v2');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            tasks = Array.isArray(parsed.tasks) ? parsed.tasks : [];
+            const foundActive = tasks.find(t => t.id === parsed.activeTaskId);
+            activeTaskId = foundActive ? foundActive.id : null;
+          } else {
+            tasks = [];
+            activeTaskId = null;
+          }
+        } catch (e) {
+          tasks = [];
+          activeTaskId = null;
+        }
+      }
+
+      function saveTasks() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            tasks: tasks,
+            activeTaskId: activeTaskId
+          }));
+        } catch (e) {}
+      }
+
+      const tasksContainer = document.getElementById('tasks-container');
+      const activeTaskBanner = document.getElementById('active-task-banner');
+      const timerActiveTaskName = document.getElementById('timer-active-task-name');
+      const timerActiveTaskPill = document.getElementById('timer-active-task-pill');
+      const tasksBadgeCount = document.getElementById('tasks-badge-count');
+      const headerTasksBadge = document.getElementById('header-tasks-badge');
+      const tabCountAll = document.getElementById('tab-count-all');
+      const tabCountPending = document.getElementById('tab-count-pending');
+      const tabCountCompleted = document.getElementById('tab-count-completed');
+      const tasksTotalFocusedTime = document.getElementById('tasks-total-focused-time');
+      const tasksCompletedRatio = document.getElementById('tasks-completed-ratio');
+
+      const taskSidebar = document.getElementById('task-sidebar');
+      const btnToggleTasks = document.getElementById('btn-toggle-tasks');
+      const btnCollapseTasks = document.getElementById('btn-collapse-tasks');
+
+      const btnShowAddTask = document.getElementById('btn-show-add-task');
+      const taskForm = document.getElementById('task-form');
+      const btnCancelTaskForm = document.getElementById('btn-cancel-task-form');
+      const taskFormId = document.getElementById('task-form-id');
+      const taskFormTitle = document.getElementById('task-form-title');
+      const taskInputTitle = document.getElementById('task-input-title');
+      const taskInputDesc = document.getElementById('task-input-desc');
+      const taskInputPriority = document.getElementById('task-input-priority');
+      const btnSaveTaskText = document.getElementById('btn-save-task-text');
+
+      const tabButtons = document.querySelectorAll('.task-tab-btn');
+
+      function formatTimeExact(totalSecs) {
+        const secs = Math.max(0, parseInt(totalSecs, 10) || 0);
+        const hours = Math.floor(secs / 3600);
+        const mins = Math.floor((secs % 3600) / 60);
+        const remSecs = secs % 60;
+        if (hours > 0) return `${hours}h ${mins}m`;
+        if (mins === 0) return `${remSecs}s`;
+        if (remSecs === 0) return `${mins} min`;
+        return `${mins}m ${remSecs}s`;
+      }
+
+      function formatPomodorosCount(count) {
+        const c = Math.max(0, parseInt(count, 10) || 0);
+        if (c === 0) return '0 pomodoros';
+        if (c === 1) return '1 pomodoro';
+        return `${c} pomodoros`;
+      }
+
+      function getPriorityBadge(priority) {
+        if (priority === 'alta') {
+          return '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-300 border border-red-500/30">Alta</span>';
+        } else if (priority === 'media') {
+          return '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">Media</span>';
+        }
+        return '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">Baja</span>';
+      }
+
+      function renderTasks() {
+        const pendingCount = tasks.filter(t => !t.completed).length;
+        const completedCount = tasks.filter(t => t.completed).length;
+        const totalCount = tasks.length;
+
+        if (tasksBadgeCount) tasksBadgeCount.textContent = `${pendingCount} pendiente${pendingCount === 1 ? '' : 's'}`;
+        if (headerTasksBadge) headerTasksBadge.textContent = pendingCount;
+        if (tabCountAll) tabCountAll.textContent = `(${totalCount})`;
+        if (tabCountPending) tabCountPending.textContent = `(${pendingCount})`;
+        if (tabCountCompleted) tabCountCompleted.textContent = `(${completedCount})`;
+
+        const totalWorkedSeconds = tasks.reduce((acc, t) => acc + (t.secondsWorked || 0), 0);
+        const totalPomodorosDone = tasks.reduce((acc, t) => acc + (t.completedCount || 0), 0);
+
+        if (tasksTotalFocusedTime) {
+          tasksTotalFocusedTime.textContent = totalWorkedSeconds === 0 ? 'Tiempo invertido: 0 min' : `Tiempo invertido: ${formatTimeExact(totalWorkedSeconds)}`;
+        }
+        if (tasksCompletedRatio) {
+          tasksCompletedRatio.textContent = tasks.length === 0 ? '0 Pomodoros' : `${totalPomodorosDone} Pomodoro${totalPomodorosDone === 1 ? '' : 's'} 🍅`;
+        }
+
+        const activeTask = tasks.find(t => t.id === activeTaskId);
+        if (activeTask) {
+          const taskSecs = activeTask.secondsWorked || 0;
+          activeTaskBanner.className = "mb-3 p-3 rounded-2xl border transition-all duration-200 glass-card ring-1 ring-primary/40";
+          activeTaskBanner.innerHTML = `
+            <div class="flex items-start justify-between gap-2 mb-1.5">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                  <span class="text-[10px] uppercase font-bold tracking-wider text-primary flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary ${isRunning ? 'animate-pulse' : ''}"></span>
+                    Tarea vinculada
+                  </span>
+                  ${getPriorityBadge(activeTask.priority)}
+                </div>
+                <h4 class="text-xs sm:text-sm font-bold text-on-surface truncate">${escapeHtml(activeTask.title)}</h4>
+              </div>
+              <button onclick="window.clearActiveTask()" class="text-on-surface-variant hover:text-on-surface text-xs p-1 shrink-0" title="Desvincular tarea">
+                <span class="material-symbols-outlined text-base">close</span>
+              </button>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-on-surface-variant pt-1">
+              <span class="flex items-center gap-1 font-mono font-medium">
+                <span>🍅 ${formatPomodorosCount(activeTask.completedCount || 0)}</span>
+              </span>
+              <span class="font-mono font-medium text-primary font-bold" id="active-task-exact-time">${formatTimeExact(taskSecs)} dedicados</span>
+            </div>
+          `;
+          if (timerActiveTaskName) timerActiveTaskName.textContent = activeTask.title;
+          if (timerActiveTaskPill) {
+            timerActiveTaskPill.classList.remove('opacity-70');
+            timerActiveTaskPill.classList.add('opacity-100', 'border-primary');
+            timerActiveTaskPill.title = `Trabajando en: ${activeTask.title}`;
+          }
+        } else {
+          activeTaskBanner.className = "mb-3 p-3 rounded-2xl border transition-all duration-200 glass-card opacity-85";
+          activeTaskBanner.innerHTML = `
+            <div class="flex items-center gap-2.5 text-on-surface-variant py-1 cursor-pointer" onclick="window.focusFirstPendingTask()">
+              <span class="material-symbols-outlined text-xl text-primary shrink-0">timer</span>
+              <div class="flex-1 text-xs">
+                <p class="font-medium text-on-surface">No hay tarea seleccionada</p>
+                <p class="text-[11px] text-on-surface-variant">Selecciona o crea una tarea para vincular tu tiempo.</p>
+              </div>
+            </div>
+          `;
+          if (timerActiveTaskName) timerActiveTaskName.textContent = 'No hay tarea seleccionada';
+          if (timerActiveTaskPill) {
+            timerActiveTaskPill.classList.add('opacity-70');
+            timerActiveTaskPill.classList.remove('opacity-100', 'border-primary');
+            timerActiveTaskPill.title = "Haz clic para vincular o crear una tarea";
+          }
+        }
+
+        let filteredTasks = tasks;
+        if (currentFilter === 'pending') filteredTasks = tasks.filter(t => !t.completed);
+        else if (currentFilter === 'completed') filteredTasks = tasks.filter(t => t.completed);
+
+        if (filteredTasks.length === 0) {
+          const isFilterActive = currentFilter !== 'all' && tasks.length > 0;
+          tasksContainer.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-8 px-3 text-center text-on-surface-variant">
+              <div class="w-12 h-12 rounded-2xl glass-pill flex items-center justify-center mb-2.5 shadow-inner border">
+                <span class="material-symbols-outlined text-2xl text-primary">${isFilterActive ? 'filter_alt_off' : 'checklist_rtl'}</span>
+              </div>
+              <p class="text-xs font-semibold text-on-surface mb-1">
+                ${isFilterActive ? 'No hay tareas en esta categoría' : 'No hay tareas aún'}
+              </p>
+              <p class="text-[11px] text-on-surface-variant max-w-[240px] leading-relaxed mb-3">
+                ${isFilterActive ? 'Prueba cambiando la pestaña del filtro arriba.' : 'Añade una nueva tarea o importa tus tareas existentes en formato JSON.'}
+              </p>
+              ${!isFilterActive ? `
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="document.getElementById('btn-show-add-task').click()" class="px-3 py-1.5 rounded-xl bg-primary text-on-primary text-xs font-semibold shadow-xs">
+                    + Añadir
+                  </button>
+                  <button type="button" onclick="document.getElementById('btn-show-import-task').click()" class="px-3 py-1.5 rounded-xl glass-pill text-xs font-semibold text-on-surface border">
+                    Importar
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+          return;
+        }
+
+        tasksContainer.innerHTML = filteredTasks.map((t) => {
+          const isActive = t.id === activeTaskId;
+          const isDone = !!t.completed;
+          const timeFormatted = formatTimeExact(t.secondsWorked || 0);
+          const pomodoroLabel = formatPomodorosCount(t.completedCount || 0);
+
+          return `
+            <div class="task-card group relative p-3 rounded-2xl glass-card transition-all duration-200 border ${
+              isActive 
+                ? 'ring-2 ring-primary border-primary shadow-md' 
+                : 'hover:border-primary/50'
+            }" draggable="true" data-id="${t.id}">
+              <div class="flex items-start gap-2.5">
+                <button type="button" onclick="window.toggleTaskComplete('${t.id}')" class="mt-0.5 w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-colors ${
+                  isDone 
+                    ? 'bg-secondary text-on-secondary border-secondary' 
+                    : 'border-outline-variant hover:border-primary bg-surface'
+                }" title="${isDone ? 'Marcar como pendiente' : 'Marcar como completada'}">
+                  ${isDone ? '<span class="material-symbols-outlined text-sm font-bold">check</span>' : ''}
+                </button>
+
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                    <span class="text-xs font-bold truncate text-on-surface ${isDone ? 'line-through opacity-60' : ''}">${escapeHtml(t.title)}</span>
+                    ${getPriorityBadge(t.priority)}
+                    ${isActive ? '<span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-primary text-on-primary">EN CURSO</span>' : ''}
+                  </div>
+
+                  ${t.desc ? `<p class="text-[11px] text-on-surface-variant line-clamp-2 mb-2 leading-relaxed ${isDone ? 'opacity-50' : ''}">${escapeHtml(t.desc)}</p>` : ''}
+
+                  <div class="flex items-center justify-between text-[11px] text-on-surface-variant bg-black/5 dark:bg-white/5 px-2.5 py-1.5 rounded-xl mb-2 font-mono">
+                    <span class="flex items-center gap-1">
+                      <span>🍅</span>
+                      <span class="font-medium text-on-surface">${pomodoroLabel}</span>
+                    </span>
+                    <span class="flex items-center gap-1 text-primary font-bold">
+                      <span class="material-symbols-outlined text-xs">schedule</span>
+                      <span>${timeFormatted}</span>
+                    </span>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-1 border-t border-outline-variant/20">
+                    <div class="flex items-center gap-1">
+                      ${!isDone ? `
+                        <button type="button" onclick="window.setActiveTask('${t.id}')" class="px-2.5 py-1 rounded-lg text-[10px] font-semibold flex items-center gap-1 transition-all ${
+                          isActive 
+                            ? 'bg-primary text-on-primary' 
+                            : 'glass-pill text-on-surface-variant hover:text-on-surface border'
+                        }">
+                          <span class="material-symbols-outlined text-xs">${isActive ? 'radio_button_checked' : 'play_arrow'}</span>
+                          ${isActive ? 'Activa' : 'Iniciar'}
+                        </button>
+                      ` : `
+                        <span class="text-[10px] text-secondary font-medium flex items-center gap-1">
+                          <span class="material-symbols-outlined text-xs">done_all</span> Finalizada
+                        </span>
+                      `}
+                    </div>
+
+                    <div class="flex items-center gap-1 opacity-85 sm:opacity-70 group-hover:opacity-100 transition-opacity">
+                      <button type="button" onclick="window.editTask('${t.id}')" class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 text-on-surface-variant" title="Editar tarea">
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                      </button>
+                      <button type="button" onclick="window.deleteTask('${t.id}')" class="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 text-red-500" title="Eliminar tarea">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        setupDragAndDrop();
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(text).replace(/[&<>"']/g, m => map[m]);
+      }
+
+      function setupDragAndDrop() {
+        const cards = tasksContainer.querySelectorAll('.task-card');
+        let draggedId = null;
+
+        cards.forEach(card => {
+          card.addEventListener('dragstart', (e) => {
+            draggedId = card.getAttribute('data-id');
+            card.classList.add('task-card-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedId);
+          });
+
+          card.addEventListener('dragend', () => {
+            card.classList.remove('task-card-dragging');
+            cards.forEach(c => c.classList.remove('task-card-drag-over'));
+          });
+
+          card.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            card.classList.add('task-card-drag-over');
+          });
+
+          card.addEventListener('dragleave', () => {
+            card.classList.remove('task-card-drag-over');
+          });
+
+          card.addEventListener('drop', (e) => {
+            e.preventDefault();
+            card.classList.remove('task-card-drag-over');
+            const targetId = card.getAttribute('data-id');
+            if (draggedId && targetId && draggedId !== targetId) {
+              const fromIndex = tasks.findIndex(t => t.id === draggedId);
+              const toIndex = tasks.findIndex(t => t.id === targetId);
+              if (fromIndex !== -1 && toIndex !== -1) {
+                const [moved] = tasks.splice(fromIndex, 1);
+                tasks.splice(toIndex, 0, moved);
+                saveTasks();
+                renderTasks();
+              }
+            }
+          });
+        });
+      }
+
+      window.setActiveTask = function(taskId) {
+        activeTaskId = taskId;
+        const task = tasks.find(t => t.id === taskId);
+        if (task && task.completed) task.completed = false;
+        saveTasks();
+        renderTasks();
+      };
+
+      window.clearActiveTask = function() {
+        activeTaskId = null;
+        saveTasks();
+        renderTasks();
+      };
+
+      window.focusFirstPendingTask = function() {
+        const first = tasks.find(t => !t.completed);
+        if (first) window.setActiveTask(first.id);
+        else showTaskForm();
+      };
+
+      window.toggleTaskComplete = function(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        task.completed = !task.completed;
+        if (task.completed && activeTaskId === taskId) {
+          const nextPending = tasks.find(t => !t.completed && t.id !== taskId);
+          activeTaskId = nextPending ? nextPending.id : null;
+        } else if (!task.completed && !activeTaskId) {
+          activeTaskId = taskId;
+        }
+        saveTasks();
+        renderTasks();
+      };
+
+      window.deleteTask = function(taskId) {
+        tasks = tasks.filter(t => t.id !== taskId);
+        if (activeTaskId === taskId) {
+          const next = tasks.find(t => !t.completed);
+          activeTaskId = next ? next.id : null;
+        }
+        saveTasks();
+        renderTasks();
+      };
+
+      window.editTask = function(taskId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+        taskFormId.value = task.id;
+        taskInputTitle.value = task.title;
+        taskInputDesc.value = task.desc || '';
+        taskInputPriority.value = task.priority || 'media';
+        taskFormTitle.textContent = 'Editar tarea';
+        btnSaveTaskText.textContent = 'Actualizar tarea';
+        taskForm.classList.remove('hidden');
+        taskInputTitle.focus();
+      };
+
+      function showTaskForm() {
+        taskFormId.value = '';
+        taskInputTitle.value = '';
+        taskInputDesc.value = '';
+        taskInputPriority.value = 'media';
+        taskFormTitle.textContent = 'Crear nueva tarea';
+        btnSaveTaskText.textContent = 'Guardar tarea';
+        taskForm.classList.remove('hidden');
+        taskInputTitle.focus();
+      }
+
+      function hideTaskForm() {
+        taskForm.classList.add('hidden');
+      }
+
+      btnShowAddTask.addEventListener('click', showTaskForm);
+      btnCancelTaskForm.addEventListener('click', hideTaskForm);
+
+      taskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = taskInputTitle.value.trim();
+        if (!title) return;
+
+        const id = taskFormId.value;
+        const desc = taskInputDesc.value.trim();
+        const priority = taskInputPriority.value;
+
+        if (id) {
+          const existing = tasks.find(t => t.id === id);
+          if (existing) {
+            existing.title = title;
+            existing.desc = desc;
+            existing.priority = priority;
+          }
+        } else {
+          const newTask = {
+            id: 'task-' + Date.now(),
+            title: title,
+            desc: desc,
+            priority: priority,
+            completedCount: 0,
+            secondsWorked: 0,
+            completed: false,
+            createdAt: Date.now()
+          };
+          tasks.unshift(newTask);
+          if (!activeTaskId) activeTaskId = newTask.id;
+        }
+
+        saveTasks();
+        renderTasks();
+        hideTaskForm();
+      });
+
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabButtons.forEach(b => {
+            b.classList.remove('bg-surface', 'text-primary', 'shadow-xs', 'font-semibold');
+            b.classList.add('font-medium', 'text-on-surface-variant');
+          });
+          btn.classList.add('bg-surface', 'text-primary', 'shadow-xs', 'font-semibold');
+          btn.classList.remove('font-medium', 'text-on-surface-variant');
+          currentFilter = btn.getAttribute('data-filter');
+          renderTasks();
+        });
+      });
+
+      let isTasksCollapsed = false;
+      function setTaskPanelCollapse(collapsed) {
+        isTasksCollapsed = collapsed;
+        if (isTasksCollapsed) {
+          taskSidebar.classList.add('hidden');
+          btnToggleTasks.classList.remove('opacity-75');
+        } else {
+          taskSidebar.classList.remove('hidden');
+          btnToggleTasks.classList.add('opacity-75');
+        }
+      }
+
+      btnToggleTasks.addEventListener('click', () => { setTaskPanelCollapse(!isTasksCollapsed); });
+      btnCollapseTasks.addEventListener('click', () => { setTaskPanelCollapse(true); });
+
+      if (timerActiveTaskPill) {
+        timerActiveTaskPill.addEventListener('click', () => {
+          if (isTasksCollapsed) setTaskPanelCollapse(false);
+          taskSidebar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      }
+
+      // ==========================================
+      // EXPORTAR E IMPORTAR TAREAS
+      // ==========================================
+      function generateTasksExportPayload() {
+        return tasks.map(t => ({
+          titulo: t.title,
+          descripcion: t.desc || '',
+          prioridad: t.priority || 'media',
+          pomodorosCompletados: t.completedCount || 0,
+          tiempoEmpleadoSegundos: t.secondsWorked || 0,
+          tiempoDedicadoMinutos: Math.floor((t.secondsWorked || 0) / 60),
+          completada: Boolean(t.completed),
+          fechaCreacion: t.createdAt || Date.now()
+        }));
+      }
+
+      function downloadTasksFile(dataString) {
+        const blob = new Blob([dataString], { type: 'application/json;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'tareas_pomodoro.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      btnExportTasks.addEventListener('click', () => {
+        const exportData = generateTasksExportPayload();
+        const jsonStr = JSON.stringify(exportData, null, 2);
+        exportJsonPreview.value = jsonStr;
+        exportModalCountDesc.textContent = `${tasks.length} tarea${tasks.length === 1 ? '' : 's'} listas para exportar (${tasks.filter(t => !t.completed).length} pendientes, ${tasks.filter(t => t.completed).length} hechas)`;
+        btnCopyExportText.textContent = "Copiar JSON";
+        showModal(exportModal);
+        downloadTasksFile(jsonStr);
+      });
+
+      btnCloseExportModal.addEventListener('click', () => hideModal(exportModal));
+
+      btnDownloadExportFile.addEventListener('click', () => {
+        const exportData = generateTasksExportPayload();
+        downloadTasksFile(JSON.stringify(exportData, null, 2));
+      });
+
+      btnCopyExportJson.addEventListener('click', () => {
+        const text = exportJsonPreview.value;
+        const fallbackCopy = () => {
+          exportJsonPreview.select();
+          document.execCommand('copy');
+          btnCopyExportText.textContent = "¡Copiado!";
+          setTimeout(() => { btnCopyExportText.textContent = "Copiar JSON"; }, 2000);
+        };
+        if (!navigator.clipboard) {
+          fallbackCopy();
+          return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+          btnCopyExportText.textContent = "¡Copiado!";
+          setTimeout(() => { btnCopyExportText.textContent = "Copiar JSON"; }, 2000);
+        }).catch(fallbackCopy);
+      });
+
+      function showImportModal() {
+        importJsonTextarea.value = '';
+        importFileInput.value = '';
+        hideImportStatus();
+        showModal(importModal);
+      }
+
+      function hideImportModal() {
+        hideModal(importModal);
+      }
+
+      function showImportStatus(text, isError) {
+        importStatusMsg.textContent = text;
+        importStatusMsg.className = `text-xs px-3 py-2 rounded-xl transition-all ${
+          isError 
+            ? 'bg-red-500/20 text-red-700 dark:text-red-300 border border-red-500/40' 
+            : 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-200 border border-emerald-500/40'
+        }`;
+        importStatusMsg.classList.remove('hidden');
+      }
+
+      function hideImportStatus() {
+        importStatusMsg.classList.add('hidden');
+        importStatusMsg.textContent = '';
+      }
+
+      btnShowImportTask.addEventListener('click', showImportModal);
+      btnCloseImportModal.addEventListener('click', hideImportModal);
+      btnCancelImport.addEventListener('click', hideImportModal);
+
+      btnFillExampleJson.addEventListener('click', () => {
+        const sample = [
+          {
+            "titulo": "Implementar autenticación OAuth",
+            "descripcion": "Integrar Google y GitHub login con validación JWT",
+            "prioridad": "alta",
+            "pomodorosCompletados": 1,
+            "tiempoEmpleadoSegundos": 1640,
+            "completada": false
+          },
+          {
+            "titulo": "Diseñar guía de estilos UI",
+            "descripcion": "Exportar tokens y componentes en Figma",
+            "prioridad": "media",
+            "pomodorosCompletados": 3,
+            "tiempoEmpleadoSegundos": 4500,
+            "completada": true
+          }
+        ];
+        importJsonTextarea.value = JSON.stringify(sample, null, 2);
+        hideImportStatus();
+      });
+
+      importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          importJsonTextarea.value = evt.target.result;
+          hideImportStatus();
+        };
+        reader.onerror = function() {
+          showImportStatus("Error al leer el archivo seleccionado.", true);
+        };
+        reader.readAsText(file);
+      });
+
+      function normalizeTaskItem(item, idx) {
+        if (!item || typeof item !== 'object') return null;
+
+        const title = item.titulo || item.title || item.nombre || item.name || '';
+        if (!title.trim()) return null;
+
+        const desc = item.descripcion || item.desc || item.description || item.notas || '';
+        let priority = (item.prioridad || item.priority || 'media').toLowerCase();
+        if (!['alta', 'media', 'baja'].includes(priority)) priority = 'media';
+
+        const completedCount = Math.max(0, parseInt(item.pomodorosCompletados || item.completedCount || item.completados || item.pomodoros || 0, 10));
+
+        let secondsWorked = 0;
+        if (item.tiempoEmpleadoSegundos !== undefined) {
+          secondsWorked = Math.max(0, parseInt(item.tiempoEmpleadoSegundos, 10) || 0);
+        } else if (item.tiempoDedicadoSegundos !== undefined) {
+          secondsWorked = Math.max(0, parseInt(item.tiempoDedicadoSegundos, 10) || 0);
+        } else if (item.tiempoDedicadoMinutos !== undefined) {
+          secondsWorked = Math.max(0, parseInt(item.tiempoDedicadoMinutos, 10) || 0) * 60;
+        } else if (item.minutesWorked !== undefined) {
+          secondsWorked = Math.max(0, parseInt(item.minutesWorked, 10) || 0) * 60;
+        } else {
+          secondsWorked = completedCount * appSettings.pomodoroMin * 60;
+        }
+
+        const isCompleted = Boolean(
+          item.completada === true || 
+          item.completada === 'true' || 
+          item.completed === true || 
+          item.completed === 'true' || 
+          item.estado === 'completada' ||
+          item.status === 'completed'
+        );
+
+        return {
+          id: 'imported-' + Date.now() + '-' + idx + '-' + Math.floor(Math.random() * 1000),
+          title: title.trim(),
+          desc: desc.trim(),
+          priority: priority,
+          completedCount: completedCount,
+          secondsWorked: secondsWorked,
+          completed: isCompleted,
+          createdAt: item.fechaCreacion || item.createdAt || Date.now()
+        };
+      }
+
+      btnExecuteImport.addEventListener('click', () => {
+        const rawText = importJsonTextarea.value.trim();
+        if (!rawText) {
+          showImportStatus("Por favor ingresa texto JSON o selecciona un archivo .json.", true);
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(rawText);
+          const rawList = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.tasks) ? parsed.tasks : (Array.isArray(parsed.tareas) ? parsed.tareas : [parsed]));
+          
+          const validTasks = [];
+          rawList.forEach((item, i) => {
+            const normalized = normalizeTaskItem(item, i);
+            if (normalized) validTasks.push(normalized);
+          });
+
+          if (validTasks.length === 0) {
+            showImportStatus("No se encontraron tareas válidas en el JSON. Comprueba el formato.", true);
+            return;
+          }
+
+          tasks = [...validTasks, ...tasks];
+
+          if (!activeTaskId) {
+            const firstPending = tasks.find(t => !t.completed);
+            if (firstPending) activeTaskId = firstPending.id;
+          }
+
+          saveTasks();
+          renderTasks();
+
+          showImportStatus(`¡Se importaron ${validTasks.length} tarea(s) con éxito!`, false);
+          setTimeout(() => { hideImportModal(); }, 800);
+        } catch (err) {
+          showImportStatus("Error de sintaxis JSON. Revisa comillas, llaves y corchetes.", true);
+        }
+      });
+
+      // ==========================================
+      // LÓGICA DEL TEMPORIZADOR Y CICLOS (BASADO EN TIEMPO REAL)
+      // ==========================================
+      function showModal(modalEl) {
+        if (!modalEl) return;
+        modalEl.classList.remove('modal-backdrop-enter');
+        modalEl.classList.add('modal-backdrop-active');
+        const content = modalEl.firstElementChild;
+        if (content) {
+          content.classList.remove('modal-content-enter');
+          content.classList.add('modal-content-active');
+        }
+      }
+
+      function hideModal(modalEl) {
+        if (!modalEl) return;
+        const content = modalEl.firstElementChild;
+        if (content) {
+          content.classList.remove('modal-content-active');
+          content.classList.add('modal-content-enter');
+        }
+        modalEl.classList.remove('modal-backdrop-active');
+        modalEl.classList.add('modal-backdrop-enter');
+      }
+
+      function updateDisplay() {
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        const formattedTime = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        display.textContent = formattedTime;
+
+        const currentPhase = POMODORO_CYCLE[phaseIndex];
+        document.title = isRunning
+          ? `${formattedTime} • ${currentPhase.name} - Pomodoro`
+          : `Pomodoro`;
+        
+        const progressFraction = totalSeconds > 0 ? 1 - (secondsLeft / totalSeconds) : 0;
+        const offset = circumference * progressFraction;
+        progressRing.style.strokeDashoffset = offset;
+
+        if (phaseSubtitle) phaseSubtitle.textContent = currentPhase.name;
+
+        updateStreakUI();
+        updateTabsUI(currentPhase.type);
+      }
+
+      function updateStreakUI() {
+        if (streakCycleStatus) streakCycleStatus.textContent = `Ciclo ${completedCycles + 1} • Sesión ${phaseIndex + 1}/8`;
+        if (streakTotalCycles) streakTotalCycles.textContent = `Ciclos completos: ${completedCycles}`;
+        if (focusCounterLabel) focusCounterLabel.textContent = `Concentración: ${focusStreak}/4`;
+        if (breakCounterLabel) breakCounterLabel.textContent = `Descansos cortos: ${breakStreak}/3`;
+
+        focusDots.forEach((dot, idx) => {
+          dot.className = idx < focusStreak 
+            ? "focus-dot w-2.5 h-2.5 rounded-full bg-primary transition-colors shadow-xs" 
+            : "focus-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors";
+        });
+
+        breakDots.forEach((dot, idx) => {
+          dot.className = idx < breakStreak 
+            ? "break-dot w-2.5 h-2.5 rounded-full bg-secondary transition-colors shadow-xs" 
+            : "break-dot w-2 h-2 rounded-full bg-outline-variant/60 transition-colors";
+        });
+      }
+
+      function updateTabsUI(activeType) {
+        if (modePomodoro) modePomodoro.textContent = `Concentración (${appSettings.pomodoroMin} min)`;
+        if (modeShort) modeShort.textContent = `Pausa Corta (${appSettings.shortMin} min)`;
+        if (modeLong) modeLong.textContent = `Pausa Larga (${appSettings.longMin} min)`;
+
+        const tabsMap = { 'pomodoro': modePomodoro, 'short': modeShort, 'long': modeLong };
+        [modePomodoro, modeShort, modeLong].forEach(btn => {
+          if (!btn) return;
+          btn.className = "mode-tab px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-sm font-medium transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap";
+        });
+
+        const activeBtn = tabsMap[activeType];
+        if (activeBtn) {
+          activeBtn.className = "mode-tab px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-sm font-semibold transition-all duration-200 bg-secondary-container text-on-secondary-container shadow-sm flex items-center gap-1.5 whitespace-nowrap";
+          const dot = document.createElement('span');
+          dot.className = "w-1.5 h-1.5 rounded-full bg-secondary";
+          activeBtn.prepend(dot);
+        }
+      }
+
+      function syncAmbientAudio() {
+        if (!ambientAudio || !ambientSelect) return;
+        const selectedOption = ambientSelect.options[ambientSelect.selectedIndex];
+        const audioSrc = selectedOption ? selectedOption.getAttribute('data-audio') : '';
+
+        if (!audioSrc || ambientSelect.value === 'none') {
+          ambientAudio.pause();
+          ambientAudio.removeAttribute('src');
+          return;
+        }
+
+        const currentSrcName = ambientAudio.getAttribute('src');
+        if (currentSrcName !== audioSrc) {
+          ambientAudio.src = audioSrc;
+          ambientAudio.load();
+        }
+
+        if (volumeSlider) ambientAudio.volume = parseFloat(volumeSlider.value);
+        ambientAudio.play().catch(() => {});
+      }
+
+      let saveThrottleCounter = 0;
+
+      function tickTimer() {
+        if (!isRunning || !endTimestamp) return;
+        const now = Date.now();
+        const remaining = Math.max(0, Math.ceil((endTimestamp - now) / 1000));
+
+        if (lastRecordedTaskTick) {
+          const elapsedSecs = Math.floor((now - lastRecordedTaskTick) / 1000);
+          if (elapsedSecs >= 1) {
+            lastRecordedTaskTick += elapsedSecs * 1000;
+            const currentPhase = POMODORO_CYCLE[phaseIndex];
+            if (currentPhase.type === 'pomodoro') {
+              recordFocusStats(elapsedSecs, 0);
+
+              if (activeTaskId) {
+                const activeTask = tasks.find(t => t.id === activeTaskId);
+                if (activeTask && !activeTask.completed) {
+                  activeTask.secondsWorked = (activeTask.secondsWorked || 0) + elapsedSecs;
+                  const exactTimeEl = document.getElementById('active-task-exact-time');
+                  if (exactTimeEl) {
+                    exactTimeEl.textContent = `${formatTimeExact(activeTask.secondsWorked)} dedicados`;
+                  }
+                  saveThrottleCounter += elapsedSecs;
+                  if (saveThrottleCounter >= 5) {
+                    saveThrottleCounter = 0;
+                    saveTasks();
+                    const totalWorkedSecs = tasks.reduce((acc, t) => acc + (t.secondsWorked || 0), 0);
+                    if (tasksTotalFocusedTime) {
+                      tasksTotalFocusedTime.textContent = `Tiempo invertido: ${formatTimeExact(totalWorkedSecs)}`;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (remaining !== secondsLeft) {
+          secondsLeft = remaining;
+          updateDisplay();
+        }
+
+        if (remaining <= 0) {
+          handlePhaseCompletion();
+        }
+      }
+
+      if (timerWorker) {
+        timerWorker.onmessage = function(e) {
+          if (e.data === 'tick') tickTimer();
+        };
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (isRunning) tickTimer();
+      });
+
+      function startTimer() {
+        unlockAudioEngine();
+        if ('Notification' in window && Notification.permission === 'default') {
+          requestDesktopNotificationPermission(true);
+        }
+
+        if (timerInterval) clearInterval(timerInterval);
+        if (timerWorker) timerWorker.postMessage('stop');
+
+        isRunning = true;
+        endTimestamp = Date.now() + (secondsLeft * 1000);
+        lastRecordedTaskTick = Date.now();
+
+        iconState.textContent = 'pause';
+        labelState.textContent = 'Pausar';
+
+        if (ambientSelect && ambientSelect.value !== 'none' && ambientAudio && ambientAudio.paused) {
+          syncAmbientAudio();
+        }
+
+        renderTasks();
+        updateDisplay();
+
+        if (timerWorker) timerWorker.postMessage('start');
+        timerInterval = setInterval(tickTimer, 250);
+      }
+
+      function pauseTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        if (timerWorker) timerWorker.postMessage('stop');
+
+        if (isRunning && endTimestamp) {
+          secondsLeft = Math.max(0, Math.ceil((endTimestamp - Date.now()) / 1000));
+        }
+
+        isRunning = false;
+        endTimestamp = null;
+        lastRecordedTaskTick = null;
+
+        iconState.textContent = 'play_arrow';
+        labelState.textContent = secondsLeft < totalSeconds ? 'Reanudar' : 'Iniciar';
+        saveTasks();
+        renderTasks();
+        updateDisplay();
+      }
+
+      function prepareNextPhase(autoStart = false) {
+        hideModal(phaseModal);
+        const currentPhase = POMODORO_CYCLE[phaseIndex];
+        totalSeconds = currentPhase.duration;
+        secondsLeft = totalSeconds;
+        labelState.textContent = 'Iniciar';
+        updateDisplay();
+        if (autoStart) {
+          startTimer();
+        }
+      }
+
+      function handlePhaseCompletion() {
+        pauseTimer();
+        playChimeSound();
+
+        const finishedPhase = POMODORO_CYCLE[phaseIndex];
+
+        if (finishedPhase.type === 'pomodoro') {
+          focusStreak = Math.min(4, focusStreak + 1);
+          recordFocusStats(0, 1);
+
+          if (activeTaskId) {
+            const activeTask = tasks.find(t => t.id === activeTaskId);
+            if (activeTask) {
+              activeTask.completedCount = (activeTask.completedCount || 0) + 1;
+              saveTasks();
+              renderTasks();
+            }
+          }
+        } else if (finishedPhase.type === 'short') {
+          breakStreak = Math.min(3, breakStreak + 1);
+        }
+
+        let nextIndex = phaseIndex + 1;
+        let cycleCompleted = false;
+
+        if (nextIndex >= POMODORO_CYCLE.length) {
+          cycleCompleted = true;
+          completedCycles++;
+          nextIndex = 0;
+          focusStreak = 0;
+          breakStreak = 0;
+        }
+
+        const nextPhase = POMODORO_CYCLE[nextIndex];
+        phaseIndex = nextIndex;
+        updateStreakUI();
+
+        const isNextBreak = (nextPhase.type === 'short' || nextPhase.type === 'long');
+        const isNextPomodoro = (nextPhase.type === 'pomodoro');
+        const shouldAutoStart = (isNextBreak && appSettings.autoStartBreak) || (isNextPomodoro && appSettings.autoStartPomodoro);
+
+        const notifTitle = finishedPhase.type === 'pomodoro'
+          ? '¡Tiempo de concentración completado!'
+          : '¡Descanso completado!';
+
+        let notifBody = cycleCompleted
+          ? `¡Felicidades! Has completado el ciclo completo. Siguiente paso: ${nextPhase.name} (${Math.round(nextPhase.duration / 60)} min).`
+          : `Siguiente paso: ${nextPhase.name} (${Math.round(nextPhase.duration / 60)} min).`;
+
+        if (shouldAutoStart) {
+          notifBody += ' (Iniciando automáticamente)';
+        }
+
+        sendDesktopNotification(notifTitle, notifBody);
+
+        if (shouldAutoStart) {
+          prepareNextPhase(true);
+          showToast(`Iniciando automáticamente: ${nextPhase.name}`);
+          return;
+        }
+
+        modalPhaseTitle.textContent = notifTitle;
+        modalPhaseDesc.textContent = notifBody;
+        showModal(phaseModal);
+      }
+
+      btnModalPrepareNext.addEventListener('click', () => {
+        prepareNextPhase(false);
+      });
+
+      toggleBtn.addEventListener('click', () => {
+        if (isRunning) pauseTimer();
+        else startTimer();
+      });
+
+      resetBtn.addEventListener('click', () => {
+        pauseTimer();
+        secondsLeft = totalSeconds;
+        labelState.textContent = 'Iniciar';
+        updateDisplay();
+      });
+
+      function hasActiveSessionOrStreak() {
+        const isPartiallyElapsed = secondsLeft < totalSeconds && secondsLeft > 0;
+        const hasStreakProgress = phaseIndex > 0 || focusStreak > 0 || breakStreak > 0;
+        return isRunning || isPartiallyElapsed || hasStreakProgress;
+      }
+
+      function switchModeConfirmed(modeKey) {
+        pauseTimer();
+        focusStreak = 0;
+        breakStreak = 0;
+
+        let targetIndex = 0;
+        if (modeKey === 'pomodoro') targetIndex = 0;
+        else if (modeKey === 'short') targetIndex = 1;
+        else if (modeKey === 'long') targetIndex = 7;
+
+        phaseIndex = targetIndex;
+        const newPhase = POMODORO_CYCLE[phaseIndex];
+        totalSeconds = newPhase.duration;
+        secondsLeft = totalSeconds;
+        labelState.textContent = 'Iniciar';
+        updateDisplay();
+      }
+
+      function handleManualTabClick(modeKey) {
+        const currentPhase = POMODORO_CYCLE[phaseIndex];
+        if (currentPhase.type === modeKey) return;
+
+        if (hasActiveSessionOrStreak()) {
+          pendingModeChange = modeKey;
+          showModal(streakModal);
+        } else {
+          switchModeConfirmed(modeKey);
+        }
+      }
+
+      modePomodoro.addEventListener('click', () => handleManualTabClick('pomodoro'));
+      modeShort.addEventListener('click', () => handleManualTabClick('short'));
+      modeLong.addEventListener('click', () => handleManualTabClick('long'));
+
+      btnCancelChange.addEventListener('click', () => {
+        pendingModeChange = null;
+        hideModal(streakModal);
+      });
+
+      btnConfirmChange.addEventListener('click', () => {
+        if (pendingModeChange) {
+          switchModeConfirmed(pendingModeChange);
+          pendingModeChange = null;
+        }
+        hideModal(streakModal);
+      });
+
+      // ==========================================
+      // GESTOR DE TEMAS Y MODO OSCURO DINÁMICO
+      // ==========================================
+      const fabBtn = document.getElementById('fab-theme-btn');
+      const fabPopover = document.getElementById('theme-fab-popover');
+      const themeSelectItems = document.querySelectorAll('.theme-select-item');
+      const activeThemePill = document.getElementById('active-theme-pill');
+      let isFabOpen = false;
+
+      function toggleFabMenu() {
+        isFabOpen = !isFabOpen;
+        if (isFabOpen) {
+          fabPopover.classList.remove('fab-menu-enter');
+          fabPopover.classList.add('fab-menu-active');
+        } else {
+          fabPopover.classList.remove('fab-menu-active');
+          fabPopover.classList.add('fab-menu-enter');
+        }
+      }
+
+      fabBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFabMenu();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (isFabOpen && !fabPopover.contains(e.target) && !fabBtn.contains(e.target)) {
+          toggleFabMenu();
+        }
+      });
+
+      function applyTheme(themeKey, bgUrl, themeLabel) {
+        document.body.setAttribute('data-active-theme', themeKey);
+
+        themeSelectItems.forEach(btn => {
+          const checkIcon = btn.querySelector('.theme-check-icon');
+          if (btn.getAttribute('data-theme') === themeKey) {
+            btn.classList.add('ring-1', 'ring-primary', 'bg-surface-container/50');
+            if (checkIcon) checkIcon.classList.remove('hidden');
+          } else {
+            btn.classList.remove('ring-1', 'ring-primary', 'bg-surface-container/50');
+            if (checkIcon) checkIcon.classList.add('hidden');
+          }
+        });
+
+        if (activeThemePill) activeThemePill.textContent = themeLabel;
+
+        if (bgUrl && themeKey !== 'original') {
+          document.body.classList.add('has-bg-image');
+          document.body.style.backgroundImage = `url('${encodeURI(bgUrl)}')`;
+        } else {
+          document.body.classList.remove('has-bg-image');
+          document.body.style.backgroundImage = 'none';
+        }
+
+        renderTasks();
+        updateDisplay();
+      }
+
+      themeSelectItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const theme = item.getAttribute('data-theme');
+          const img = item.getAttribute('data-img');
+          const label = item.querySelector('.truncate')?.textContent || 'Tema';
+          applyTheme(theme, img, label);
+          toggleFabMenu();
+        });
+      });
+
+      themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+        renderTasks();
+        updateDisplay();
+      });
+
+      ambientSelect.addEventListener('change', () => {
+        if (ambientSelect.value === 'none') {
+          ambientIcon.textContent = 'volume_off';
+        } else {
+          ambientIcon.textContent = 'graphic_eq';
+        }
+        syncAmbientAudio();
+      });
+
+      volumeSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        const percent = Math.round(val * 100);
+        volumeLabel.textContent = `${percent}%`;
+
+        if (val === 0) volumeIcon.textContent = 'volume_off';
+        else if (val < 0.5) volumeIcon.textContent = 'volume_down';
+        else volumeIcon.textContent = 'volume_up';
+
+        if (ambientAudio) ambientAudio.volume = val;
+      });
+
+      // Inicialización
+      populateSettingsForm();
+      loadTasks();
+      renderTasks();
+      updateDisplay();
+    })();
+</script>
+
+<script id="m3-volume-controller">
+(function() {
+  const wrapper = document.getElementById('m3-volume-wrapper');
+  const compactBtn = document.getElementById('volume-compact-btn');
+  const compactIcon = document.getElementById('volume-compact-icon');
+  const expandedPill = document.getElementById('volume-expanded-pill');
+  const closeBtn = document.getElementById('volume-close-btn');
+  const muteBtn = document.getElementById('volume-mute-btn');
+  const volumeSlider = document.getElementById('volume-slider');
+  const volumeLabel = document.getElementById('volume-label');
+  const volumeIcon = document.getElementById('volume-icon');
+  const ambientAudio = document.getElementById('ambient-audio');
+  
+  let isExpanded = false;
+  let previousVolume = 0.7;
+
+  function getVolumeIconName(val) {
+    if (val <= 0.01) return 'volume_off';
+    if (val < 0.5) return 'volume_down';
+    return 'volume_up';
+  }
+
+  function updateVolumeUI(val) {
+    const percent = Math.round(val * 100);
+    if (volumeLabel) volumeLabel.textContent = `${percent}%`;
+    const iconName = getVolumeIconName(val);
+    if (volumeIcon) volumeIcon.textContent = iconName;
+    if (compactIcon) compactIcon.textContent = iconName;
+    if (ambientAudio) ambientAudio.volume = val;
+    if (val > 0) previousVolume = val;
+  }
+
+  function openVolume() {
+    isExpanded = true;
+    compactBtn.classList.add('hidden');
+    compactBtn.setAttribute('aria-expanded', 'true');
+    expandedPill.classList.remove('m3-volume-pill-enter');
+    expandedPill.classList.add('m3-volume-pill-active');
+  }
+
+  function closeVolume() {
+    isExpanded = false;
+    compactBtn.classList.remove('hidden');
+    compactBtn.setAttribute('aria-expanded', 'false');
+    expandedPill.classList.remove('m3-volume-pill-active');
+    expandedPill.classList.add('m3-volume-pill-enter');
+  }
+
+  if (compactBtn) {
+    compactBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openVolume();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeVolume();
+    });
+  }
+
+  if (muteBtn) {
+    muteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const current = parseFloat(volumeSlider.value);
+      if (current > 0.01) {
+        previousVolume = current;
+        volumeSlider.value = 0;
+        updateVolumeUI(0);
+      } else {
+        const restore = previousVolume > 0.05 ? previousVolume : 0.7;
+        volumeSlider.value = restore;
+        updateVolumeUI(restore);
+      }
+    });
+  }
+
+  if (volumeSlider) {
+    volumeSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      updateVolumeUI(val);
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (isExpanded && wrapper && !wrapper.contains(e.target)) {
+      closeVolume();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isExpanded) {
+      closeVolume();
+    }
+  });
+
+  if (volumeSlider) updateVolumeUI(parseFloat(volumeSlider.value || 0.7));
+})();
+</script>
+</body>
+</html>
